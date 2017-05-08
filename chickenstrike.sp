@@ -31,6 +31,7 @@
 #include "chickenstrike/weapons.sp"
 #include "chickenstrike/menus.sp"
 #include "chickenstrike/init.sp"
+#include "chickenstrike/utils.sp"
 
 /*  BUGS
 *
@@ -114,16 +115,22 @@ public void OnConfigsExecuted()
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(GetEventInt(event, "userid"));
-	DisableChicken(victim);
+	if (IsClientCT(victim))
+	{
+		DisableChicken(victim);
+	}
 }
 
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
-	//Get player's viewmodel for future hiding
-	clientsViewmodels[client_index] = GetViewModelIndex(client_index);
-	//Transformation!!
-	SetChicken(client_index);
+	if (IsClientCT(client_index))
+	{
+		//Get player's viewmodel for future hiding
+		clientsViewmodels[client_index] = GetViewModelIndex(client_index);
+		//Transformation!!
+		SetChicken(client_index);
+	}
 	//Remove player collisions
 	SetEntData(client_index, collisionOffsets, 2, 1, true);
 }
@@ -131,7 +138,10 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
 {
 	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
-	DisableChicken(client_index);
+	if (IsClientCT(client_index))
+	{
+		DisableChicken(client_index);
+	}
 }
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
@@ -392,13 +402,3 @@ public Action Hook_SetTransmit(int entity, int client)
 {
 	return Plugin_Handled;
 }
-
-
-stock bool IsValidClient(int client)
-{ 
-    if (client <= 0 || client > MaxClients || !IsClientConnected(client))
-    {
-        return false; 
-    }
-    return IsClientInGame(client); 
-}  
