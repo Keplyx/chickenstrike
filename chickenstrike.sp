@@ -27,7 +27,6 @@
 #pragma newdecls required;
 
 #include "chickenstrike/chickenplayer.sp"
-#include "chickenstrike/chickenmanager.sp"
 #include "chickenstrike/customweapons.sp"
 #include "chickenstrike/weapons.sp"
 #include "chickenstrike/menus.sp"
@@ -92,8 +91,6 @@ public void OnPluginStart()
 	
 	CreateConVars(VERSION);
 	
-	UpdateChickenCvars(cvar_chicken_number);
-	
 	collisionOffsets = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
 	//Throws Error
@@ -139,7 +136,6 @@ public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
-	SpawnChickens();
 	ResetAllItems();
 	CPrintToChatAll("{yellow}Open the buy menu bu pressing {white}[S]");
 	//Setup buy menu
@@ -311,8 +307,6 @@ public void Hook_WeaponSwitchPost(int client_index, int weapon_index)
 public void Hook_OnPostThinkPost(int entity_index)
 {
 	SetViewModel(entity_index, GetConVarBool(cvar_viewModel)); //Hide viewmodel based on cvar
-	//Update convars for other files
-	UpdateChickenCvars(cvar_chicken_number);
 }
 
 public void Hook_OnGrenadeThinkPost(int entity_index)
