@@ -66,6 +66,8 @@ int collisionOffsets;
 
 bool lateload;
 
+int chickenOP;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME
@@ -137,23 +139,47 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
 {
 	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
-	DisableChicken(client_index);
 	if (IsClientCT(client_index))
 	{
-		if (GetTeamClientCount(CS_TEAM_CT) > 1)
-		{
-			CS_SwitchTeam(client_index, CS_TEAM_T);
-		}	
+		DisableChicken(client_index);
 	}
 }
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	ResetAllItems();
+	ChooseOP();
 	CPrintToChatAll("{yellow}Open the buy menu bu pressing {white}[S]");
 	//Setup buy menu
 	canBuyAll = true;
 	CreateTimer(GetConVarFloat(cvar_custombuymenu), Timer_BuyMenu);
+}
+
+public void ChooseOP()
+{
+	chickenOP = GetRandomPlayer();
+	if (GetClientTeam(chickenOP) == CS_TEAM_CT)
+	{
+		ResetTeams();
+	}
+	else if (GetClientTeam(chickenOP) == CS_TEAM_T)
+	{
+		ChangeClientTeam(chickenOP, CS_TEAM_CT);
+		CS_RespawnPlayer(chickenOP);
+		ResetTeams();
+	}
+}
+
+public void ResetTeams()
+{
+	for (int i = 1; i < MAXPLAYERS; i++)
+	{
+		if (IsValidClient(i) && IsClientCT(i) && i != chickenOP)
+		{
+			ChangeClientTeam(i, CS_TEAM_T);
+			CS_RespawnPlayer(i);
+		}
+	}
 }
 
 public void OnClientPostAdminCheck(int client_index)
@@ -319,7 +345,10 @@ public void Hook_WeaponSwitchPost(int client_index, int weapon_index)
 
 public void Hook_OnPostThinkPost(int entity_index)
 {
-	SetViewModel(entity_index, GetConVarBool(cvar_viewModel)); //Hide viewmodel based on cvar
+	if (IsValidClient(entity_index))
+	{
+		SetViewModel(entity_index, GetConVarBool(cvar_viewModel)); //Hide viewmodel based on cvar
+	}
 }
 
 public void Hook_OnGrenadeThinkPost(int entity_index)

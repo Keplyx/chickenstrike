@@ -29,3 +29,19 @@ stock bool IsClientCT(int client_index)
 {
 	return GetClientTeam(client_index) == CS_TEAM_CT;
 }
+
+
+stock int GetRandomPlayer()
+{
+	int client_index;
+	if (GetClientCount(true) > 0)
+	{
+		do
+		{
+		client_index = GetRandomInt(1, MAXPLAYERS);
+		}
+		while (!IsValidClient(client_index));
+		return client_index;
+	}
+	return 0;
+}
