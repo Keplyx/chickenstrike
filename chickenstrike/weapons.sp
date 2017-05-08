@@ -19,17 +19,6 @@
 int weapons[MAXPLAYERS];
 int clientsViewmodels[MAXPLAYERS + 1];
 char currentWeaponName[MAXPLAYERS + 1][32];
-char eggModel[] = "models/chicken/festive_egg.mdl";
-
-enum eggColors
-{
-	WHITE,
-	ORANGE,
-	GREEN,
-	BLUE,
-	YELLOW,
-	PURPLE
-};
 
 public void DisplaySwitching(int client_index)
 {
@@ -73,29 +62,8 @@ public void CreateFakeWeapon(int client_index, int weapon_index)
 
 public void SetModel(int client_index, int weapon_index, char[] classname)
 {
-	if (StrEqual(classname, "weapon_smokegrenade", false))
+	if (StrEqual(classname, "weapon_smokegrenade", false) || StrEqual(classname, "weapon_decoy", false) || StrEqual(classname, "weapon_tagrenade", false) || StrEqual(classname, "weapon_molotov", false) || StrEqual(classname, "weapon_incgrenade", false) || StrEqual(classname, "weapon_hegrenade", false))
 	{
-		SetEggGrenade(weapons[client_index], WHITE);
-		SetWeaponPos(client_index, 1);
-	}
-	else if (StrEqual(classname, "weapon_decoy", false))
-	{
-		SetEggGrenade(weapons[client_index], YELLOW);
-		SetWeaponPos(client_index, 1);
-	}
-	else if (StrEqual(classname, "weapon_tagrenade", false))
-	{
-		SetEggGrenade(weapons[client_index], PURPLE);
-		SetWeaponPos(client_index, 1);
-	}
-	else if (StrEqual(classname, "weapon_molotov", false) || StrEqual(classname, "weapon_incgrenade", false))
-	{
-		SetEggGrenade(weapons[client_index], GREEN);
-		SetWeaponPos(client_index, 1);
-	}
-	else if (StrEqual(classname, "weapon_hegrenade", false))
-	{
-		SetEggGrenade(weapons[client_index], ORANGE);
 		SetWeaponPos(client_index, 1);
 	}
 	else if (StrEqual(classname, "weapon_healthshot", false))
@@ -112,12 +80,6 @@ public void SetModel(int client_index, int weapon_index, char[] classname)
 		SetEntityModel(weapons[client_index], modelName);
 		SetWeaponPos(client_index, 0);
 	}
-}
-
-public void SetEggGrenade(int weapon_index, int color)
-{
-	SetEntityModel(weapon_index, eggModel);
-	SetEntProp(weapon_index, Prop_Send, "m_nSkin", color);
 }
 
 public void SetWeaponPos(int client_index, int type)
@@ -205,18 +167,3 @@ public void SetViewModel(int client_index, bool enabled)
 		EntEffects |= 32; // Set to Nodraw
 	SetEntProp(clientsViewmodels[client_index], Prop_Send, "m_fEffects", EntEffects);
 }
-
-public void RemovePlayerWeapons(int client_index)
-{
-	int weaponIndex;
-	//Cycles through every slot and deletes the weapons
-	for (int i = 0; i < 5; i++) {
-		if (GetPlayerWeaponSlot(client_index, i) != -1) {
-			weaponIndex = GetPlayerWeaponSlot(client_index, i);
-			RemovePlayerItem(client_index, weaponIndex);
-			RemoveEdict(weaponIndex);
-		}
-	}
-}
-
-

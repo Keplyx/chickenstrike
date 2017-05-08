@@ -16,22 +16,12 @@
 *   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-int chickenHats[6];
-int chickenSkin = 0;
-int chickenNumber = 0;
-bool spawnOrigin = true;
 
-public void UpdateChickenCvars(Handle hats[6], Handle skins, Handle chickenNum, Handle spawn)
+int chickenNumber = 0;
+
+public void UpdateChickenCvars(Handle chickenNum)
 {
-	//get cvars from main file
-	for (int i = 0; i < sizeof(hats); i++)
-	{
-		chickenHats[i] = GetConVarInt(hats[i]);
-	}
-	
-	chickenSkin = GetConVarInt(skins);
 	chickenNumber = GetConVarInt(chickenNum);
-	spawnOrigin = GetConVarBool(spawn);
 }
 
 
@@ -44,33 +34,11 @@ public void SpawnChickens()
 	float worldOrigin[3];
 	
 	//Creates some chickens around the world origin
-	if (spawnOrigin)
+	while (entitySpawnCounter < chickenNumber)
 	{
-		while (entitySpawnCounter < chickenNumber)
-		{
-			entitySpawnCounter += CreateChickenRandom(worldOrigin); //If entity has been created, add 1 to the chicken counter
-		}
-	}
-	//Creates some chickens both sides around spawn
-	else
-	{
-		float fOrigin[3];
-		int spawn = FindEntityByClassname(MAXPLAYERS, "info_player_terrorist");
-		GetEntPropVector(spawn, Prop_Send, "m_vecOrigin", fOrigin);
-		while (entitySpawnCounter < (chickenNumber / 2))
-		{
-			entitySpawnCounter += CreateChickenRandom(fOrigin); //If entity has been created, add 1 to the chicken counter
-		}
-		spawn = FindEntityByClassname(MAXPLAYERS, "info_player_counterterrorist");
-		GetEntPropVector(spawn, Prop_Send, "m_vecOrigin", fOrigin);
-		while (entitySpawnCounter < chickenNumber)
-		{
-			entitySpawnCounter += CreateChickenRandom(fOrigin);
-		}
+		entitySpawnCounter += CreateChickenRandom(worldOrigin); //If entity has been created, add 1 to the chicken counter
 	}
 	
-	
-	//PrintToChatAll("chickens : %i", entitySpawnCounter);
 }
 
 public int CreateChickenRandom(float origin[3])
@@ -83,7 +51,6 @@ public int CreateChickenRandom(float origin[3])
 	int entity = CreateEntityByName("chicken");
 	if (IsValidEntity(entity))
 	{
-		SetChickenStyle(entity); //Set the hat/skin
 		//Random pos around the origin (if too big, can crash)
 		float newPos[3];
 		newPos[0] = origin[0] + GetRandomFloat(-2500.0, 2500.0);
@@ -124,41 +91,3 @@ public void RemoveChickens()
 		}
 	}
 }
-
-public void SetChickenStyle(int chicken)
-{
-	SetEntProp(chicken, Prop_Send, "m_nSkin", GetChickenSkin()); //0=normal 1=brown chicken
-	SetEntProp(chicken, Prop_Send, "m_nBody", GetChickenHat()); //0=normal 1=BdayHat 2=ghost 3=XmasSweater 4=bunnyEars 5=pumpkinHead
-}
-
-public int GetChickenSkin()
-{
-	if (chickenSkin == 2)
-	{
-		return GetRandomInt(0, 1);
-	}
-	else
-		return chickenSkin;
-}
-
-public int GetChickenHat()
-{
-	int enabled[sizeof(chickenHats)];
-	int total = 0;
-	for (int i = 0; i < sizeof(chickenHats); i++)
-	{
-		if (chickenHats[i] == 1)
-		{
-			enabled[total] = i;
-			total++;
-		}
-	}
-	if (total == 0) //Set chicken to no hat if every cvar is at 0
-	{
-		return 0;
-	}
-	else //Select a random hat between the enabled ones
-	{
-		return enabled[GetRandomInt(0, (total - 1))];
-	}
-} 

@@ -41,35 +41,12 @@ bool wasWalking[MAXPLAYERS + 1] = false;
 bool isMoving[MAXPLAYERS + 1] = false;
 int flyCounter[MAXPLAYERS + 1];
 
-//Skin/hat variables
-int playerHat[MAXPLAYERS + 1] = -1;
-int playerSkin[MAXPLAYERS + 1] = -1;
-int serverHat[MAXPLAYERS + 1] = 0;
-int serverSkin[MAXPLAYERS + 1] = 0;
-
-//Chicken variables (change with convars)
-int chickenHealth = 15;
-bool canChooseStyle = true;
 
 //Chicken constants
 const float chickenRunSpeed = 0.36; //Match real chicken speed (kind of)  
 const float chickenWalkSpeed = 0.12;
 const float maxFallSpeed = -100.0;
 
-void InitPlayersStyles() //Set skins/hats to server sided for everyone
-{
-	for (int i = 0; i <= MAXPLAYERS; i++)
-	{
-		playerHat[i] = -1;
-		playerSkin[i] = -1;
-	}
-}
-
-void ResetPlayerStyle(int client_index) //Set a player's skin/hat to server sided
-{
-	playerHat[client_index] = -1;
-	playerSkin[client_index] = -1;
-}
 
 void SetChicken(int client_index)
 {
@@ -78,8 +55,6 @@ void SetChicken(int client_index)
 	
 	//Only for hitbox -> Collision hull still the same
 	SetEntityModel(client_index, chickenModel);
-	//Little chicken is weak
-	SetEntityHealth(client_index, chickenHealth);
 	//Little chicken has little legs
 	SetClientSpeed(client_index, chickenRunSpeed); //Changed based on animation
 	//Hide the real player model (because animations won't play)
@@ -95,16 +70,6 @@ void CreateFakeModel(int client_index)
 	if (IsValidEntity(chickens[client_index])) {
 		SetEntityModel(chickens[client_index], chickenModel);
 		
-		//Set skin/hat
-		if (playerSkin[client_index] != -1 && canChooseStyle)
-			SetEntProp(chickens[client_index], Prop_Send, "m_nSkin", playerSkin[client_index]); //0=normal 1=brown chicken
-		else
-			SetEntProp(chickens[client_index], Prop_Send, "m_nSkin", serverSkin[client_index]);
-		
-		if (playerHat[client_index] != -1 && canChooseStyle)
-			SetEntProp(chickens[client_index], Prop_Send, "m_nBody", playerHat[client_index]); //0=normal 1=BdayHat 2=ghost 3=XmasSweater 4=bunnyEars 5=pumpkinHead
-		else
-			SetEntProp(chickens[client_index], Prop_Send, "m_nBody", serverHat[client_index]);
 		//Teleports the chicken at the player's feet
 		float pos[3];
 		GetClientAbsOrigin(client_index, pos);
