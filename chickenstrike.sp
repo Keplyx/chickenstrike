@@ -89,7 +89,6 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_team", Event_PlayerTeam);
 	HookEvent("round_start", Event_RoundStart);
-	
 	CreateConVars(VERSION);
 	
 	collisionOffsets = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
@@ -138,9 +137,13 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
 {
 	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
+	DisableChicken(client_index);
 	if (IsClientCT(client_index))
 	{
-		DisableChicken(client_index);
+		if (GetTeamClientCount(CS_TEAM_CT) > 1)
+		{
+			CS_SwitchTeam(client_index, CS_TEAM_T);
+		}	
 	}
 }
 
