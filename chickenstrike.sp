@@ -158,18 +158,15 @@ public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast
 public void ChooseOP()
 {
 	chickenOP = GetRandomPlayer();
-	
 	if (GetClientTeam(chickenOP) == CS_TEAM_CT)
 	{
 		ResetTeams();
-		PrintToChatAll("Already CT");
 	}
 	else if (GetClientTeam(chickenOP) == CS_TEAM_T)
 	{
 		ChangeClientTeam(chickenOP, CS_TEAM_CT);
 		CS_RespawnPlayer(chickenOP);
 		ResetTeams();
-		PrintToChatAll("Putting in CT");
 	}
 }
 
@@ -179,7 +176,6 @@ public void ResetTeams()
 	{
 		if (IsValidClient(i) && IsClientCT(i) && i != chickenOP)
 		{
-			DisableChicken(i);
 			ChangeClientTeam(i, CS_TEAM_T);
 			CS_RespawnPlayer(i);
 		}

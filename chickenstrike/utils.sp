@@ -27,7 +27,11 @@ stock bool IsValidClient(int client_index)
 
 stock bool IsClientCT(int client_index)
 {
-	return GetClientTeam(client_index) == CS_TEAM_CT;
+	if (IsValidClient(client_index))
+	{
+		return GetClientTeam(client_index) == CS_TEAM_CT;
+	}
+	return false;
 }
 
 
