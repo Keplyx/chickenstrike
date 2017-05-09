@@ -20,7 +20,6 @@ ConVar cvar_viewModel = null;
 ConVar cvar_welcome_message = null;
 ConVar cvar_healthfactor = null;
 ConVar cvar_customdecoy = null;
-ConVar cvar_customhe = null;
 ConVar cvar_custombuymenu = null;
 
 public void CreateConVars(char[] version)
@@ -30,7 +29,6 @@ public void CreateConVars(char[] version)
 	cvar_welcome_message = CreateConVar("cw_welcomemessage", "1", "Displays a welcome message to new players. 0 = no message, 1 = display message", FCVAR_NOTIFY, true, 0.0, true, 1.0);		
 	cvar_healthfactor = CreateConVar("cw_healthfactor", "50", "How much health per T the CT must have.", FCVAR_NOTIFY, true, 1.0, true, 1000.0);
 	cvar_customdecoy = CreateConVar("cw_customdecoy", "1", "Set whether to enable custom decoys. 0 = disabled, 1 = enabled", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	cvar_customhe = CreateConVar("cw_customhe", "1", "Set whether to enable custom HE grenades. 0 = disabled, 1 = enabled", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	cvar_custombuymenu = CreateConVar("cw_custombuymenu", "20", "Set how much time the custom buy menu should be displayed after player spawn. 0 = disabled, x = x seconds", FCVAR_NOTIFY, true, 0.0, true, 3600.0);
 	
 	AutoExecConfig(true, "chickenstrike");

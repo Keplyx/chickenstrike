@@ -198,50 +198,10 @@ public void OnClientDisconnect(int client_index)
 
 public void OnEntityCreated(int entity_index, const char[] classname)
 {
-	
 	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
 	{
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
 	}
-	if (StrEqual(classname, "hegrenade_projectile", false) && GetConVarBool(cvar_customhe))
-	{
-		int client_index = GetEntPropEnt(entity_index, Prop_Data, "m_hOwnerEntity");
-		if (IsClientCT(client_index))
-		{
-			CreateTimer(0.0, Timer_DefuseGrenade, entity_index);
-			SDKHook(entity_index, SDKHook_StartTouch, StartTouchHegrenade);
-		}
-	}
-}
-
-public Action StartTouchHegrenade(int iEntity, int iEntity2)
-{
-    int iRef = EntIndexToEntRef(iEntity);
-    CreateTimer(1.0, Timer_CreateExpChicken, iRef);
-}
-
-public Action Timer_CreateExpChicken(Handle timer, any ref)
-{
-	int entity_index = EntRefToEntIndex(ref);
-	if (entity_index != INVALID_ENT_REFERENCE){
-		float fVelocity[3];
-		GetEntPropVector(entity_index, Prop_Send, "m_vecVelocity", fVelocity);
-		if (fVelocity[0] == 0.0 && fVelocity[1] == 0.0 && fVelocity[2] == 0.0)
-		{
-			float fOrigin[3];
-			GetEntPropVector(entity_index, Prop_Send, "m_vecOrigin", fOrigin);
-			int owner = GetEntPropEnt(entity_index, Prop_Send, "m_hOwnerEntity");
-			ExplosiveChicken(fOrigin, owner);
-			AcceptEntityInput(entity_index, "Kill");
-		}
-	}
-}
-
-public Action Timer_DefuseGrenade(Handle timer, any ref)
-{
-	int ent = EntRefToEntIndex(ref);
-	if (ent != INVALID_ENT_REFERENCE)
-	SetEntProp(ent, Prop_Data, "m_nNextThinkTick", -1);
 }
 
 public Action Timer_WelcomeMessage(Handle timer, int client_index)
