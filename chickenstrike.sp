@@ -139,10 +139,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
 {
 	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (IsClientCT(client_index))
-	{
-		DisableChicken(client_index);
-	}
+	DisableChicken(client_index);
 }
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
@@ -261,7 +258,7 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 
 public void Hook_WeaponSwitchPost(int client_index, int weapon_index)
 {
-	if (GetEntityRenderMode(client_index) == RENDER_NONE)
+	if (IsClientCT(client_index))
 	{
 		//Hide the real weapon (which can't be moved because of the bonemerge attribute in the model) and creates a fake one, moved to the chicken's side
 		SetWeaponVisibility(client_index, weapon_index, false);
@@ -272,7 +269,7 @@ public void Hook_WeaponSwitchPost(int client_index, int weapon_index)
 	}
 	else
 	{
-		//If player is visible (not a chicken??) make his weapons visible and don't create a fake one
+		//If player is not a CT make his weapons visible and don't create a fake one
 		SetWeaponVisibility(client_index, weapon_index, true);
 	}
 }
@@ -306,58 +303,6 @@ public void Hook_OnGrenadeThinkPost(int entity_index)
 		}
 	}
 }
-
-public void Hook_OnChickenThinkPost(int entity_index)
-{
-	float area[3] =  { 80.0, 80.0, 80.0 };
-	for (int i = 1; i <= MAXPLAYERS; i++)
-	{
-		if (IsValidClient(i))
-		{
-			
-			//int owner = GetEntPropEnt(entity_index, Prop_Send, "m_hOwnerEntity");
-			//if (GetClientTeam(i) != GetClientTeam(owner))
-			//{
-				float fOrigin[3];
-				GetClientAbsOrigin(i, fOrigin);
-				float pos[3];
-				GetEntPropVector(entity_index, Prop_Send, "m_vecOrigin", pos);
-				bool inside = false;
-				for (int j = 0; j < sizeof(area); j++)
-				{
-					inside = fOrigin[j] < pos[j] + area[j] && fOrigin[j] > pos[j] - area[j];
-					if (!inside)
-						break;
-				}
-				if (inside)
-					createExplosion(pos);
-			//}
-		}
-	}
-}
-
-public void createExplosion(float pos[3])
-{
-	int entity = CreateEntityByName("env_explosion");
-	if (IsValidEntity(entity))
-	{
-		TeleportEntity(entity, pos, NULL_VECTOR, NULL_VECTOR);
-		DispatchSpawn(entity);
-		ActivateEntity(entity);
-		DispatchKeyValue(entity, "iMagnitude", "100"); 
-		SetVariantString("!activator");
-		AcceptEntityInput(entity, "Explode", entity, entity);
-		AcceptEntityInput(entity, "Kill");
-	}
-}
-
-
-public bool TRDontHitSelf(int entity, int mask, any data) //Trace hull filter
-{
-	if (entity == data)return false;
-	return true;
-}
-
 
 public Action Hook_WeaponReloadPost(int weapon) //Bug: gets called if ammo is full and player pressing reload key
 {
