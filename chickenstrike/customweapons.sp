@@ -21,6 +21,7 @@ public void ChickenDecoy(int client_index, float pos[3], int currentWeapon) //Ch
 	int entity = CreateEntityByName("chicken");
 	if (IsValidEntity(entity))
 	{
+		SetEntProp(entity, Prop_Send, "m_nSkin", 1); //Brown chicken
 		//Random orientation
 		float rot[3];
 		rot[1] = GetRandomFloat(0.0, 360.0);

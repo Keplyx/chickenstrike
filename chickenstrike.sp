@@ -205,8 +205,12 @@ public void OnEntityCreated(int entity_index, const char[] classname)
 	}
 	if (StrEqual(classname, "hegrenade_projectile", false) && GetConVarBool(cvar_customhe))
 	{
-		CreateTimer(0.0, Timer_DefuseGrenade, entity_index);
-		SDKHook(entity_index, SDKHook_StartTouch, StartTouchHegrenade);
+		int client_index = GetEntPropEnt(entity_index, Prop_Data, "m_hOwnerEntity");
+		if (IsClientCT(client_index))
+		{
+			CreateTimer(0.0, Timer_DefuseGrenade, entity_index);
+			SDKHook(entity_index, SDKHook_StartTouch, StartTouchHegrenade);
+		}
 	}
 }
 
@@ -331,14 +335,15 @@ public void Hook_OnGrenadeThinkPost(int entity_index)
 	if (fVelocity[0] == 0.0 && fVelocity[1] == 0.0 && fVelocity[2] == 0.0)
 	{
 		int client_index = GetEntPropEnt(entity_index, Prop_Data, "m_hOwnerEntity")
-		float fOrigin[3];
-		GetEntPropVector(entity_index, Prop_Send, "m_vecOrigin", fOrigin);
-		
 		char buffer[64];
 		GetEntityClassname(entity_index, buffer, sizeof(buffer));
-		if (StrEqual(buffer, "decoy_projectile") && IsClientCT(client_index))
-		ChickenDecoy(client_index, fOrigin, weapons[client_index]);
-		AcceptEntityInput(entity_index, "Kill");
+		
+		if (StrEqual(buffer, "decoy_projectile") && IsClientCT(client_index)){
+			float fOrigin[3];
+			GetEntPropVector(entity_index, Prop_Send, "m_vecOrigin", fOrigin);
+			ChickenDecoy(client_index, fOrigin, weapons[client_index]);
+			AcceptEntityInput(entity_index, "Kill");
+		}
 	}
 }
 
