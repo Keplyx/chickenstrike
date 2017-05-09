@@ -42,21 +42,18 @@ public void CreateFakeWeapon(int client_index, int weapon_index)
 	DeleteFakeWeapon(client_index);
 	char weapon_name[32];
 	GetEdictClassname(weapon_index, weapon_name, sizeof weapon_name);
-	
-	if (!StrEqual(weapon_name, "weapon_knife", false))
+
+	weapons[client_index] = CreateEntityByName("prop_dynamic_override");
+	if (IsValidEntity(weapons[client_index]))
 	{
-		weapons[client_index] = CreateEntityByName("prop_dynamic_override");
-		if (IsValidEntity(weapons[client_index]))
-		{
-			SetVariantString("!activator");
-			AcceptEntityInput(weapons[client_index], "SetParent", client_index, weapons[client_index], 0);
-			SetModel(client_index, weapon_index, weapon_name)
-			//Make sure the gun is not solid
-			DispatchKeyValue(weapons[client_index], "solid", "0");
-			//Spawn it!
-			DispatchSpawn(weapons[client_index]);
-			ActivateEntity(weapons[client_index]);
-		}
+		SetVariantString("!activator");
+		AcceptEntityInput(weapons[client_index], "SetParent", client_index, weapons[client_index], 0);
+		SetModel(client_index, weapon_index, weapon_name)
+		//Make sure the gun is not solid
+		DispatchKeyValue(weapons[client_index], "solid", "0");
+		//Spawn it!
+		DispatchSpawn(weapons[client_index]);
+		ActivateEntity(weapons[client_index]);
 	}
 }
 

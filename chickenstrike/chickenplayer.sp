@@ -41,6 +41,8 @@ bool wasWalking[MAXPLAYERS + 1] = false;
 bool isMoving[MAXPLAYERS + 1] = false;
 int flyCounter[MAXPLAYERS + 1];
 
+//Chicken variables
+int healthFactor;
 
 //Chicken constants
 const float chickenRunSpeed = 0.36; //Match real chicken speed (kind of)  
@@ -55,6 +57,8 @@ void SetChicken(int client_index)
 	
 	//Only for hitbox -> Collision hull still the same
 	SetEntityModel(client_index, chickenModel);
+	
+	SetEntityHealth(client_index, healthFactor * GetTeamClientCount(CS_TEAM_T));
 	//Little chicken has little legs
 	SetClientSpeed(client_index, chickenRunSpeed); //Changed based on animation
 	//Hide the real player model (because animations won't play)
@@ -69,6 +73,8 @@ void CreateFakeModel(int client_index)
 	chickens[client_index] = CreateEntityByName("prop_dynamic_override");
 	if (IsValidEntity(chickens[client_index])) {
 		SetEntityModel(chickens[client_index], chickenModel);
+		
+		SetEntProp(chickens[client_index], Prop_Send, "m_nSkin", 1); //Brown chicken
 		
 		//Teleports the chicken at the player's feet
 		float pos[3];

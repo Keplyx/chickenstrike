@@ -158,15 +158,18 @@ public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast
 public void ChooseOP()
 {
 	chickenOP = GetRandomPlayer();
+	
 	if (GetClientTeam(chickenOP) == CS_TEAM_CT)
 	{
 		ResetTeams();
+		PrintToChatAll("Already CT");
 	}
 	else if (GetClientTeam(chickenOP) == CS_TEAM_T)
 	{
 		ChangeClientTeam(chickenOP, CS_TEAM_CT);
 		CS_RespawnPlayer(chickenOP);
 		ResetTeams();
+		PrintToChatAll("Putting in CT");
 	}
 }
 
@@ -176,6 +179,7 @@ public void ResetTeams()
 	{
 		if (IsValidClient(i) && IsClientCT(i) && i != chickenOP)
 		{
+			DisableChicken(i);
 			ChangeClientTeam(i, CS_TEAM_T);
 			CS_RespawnPlayer(i);
 		}
@@ -198,11 +202,11 @@ public void OnClientDisconnect(int client_index)
 
 public void OnEntityCreated(int entity_index, const char[] classname)
 {
-	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
+	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy) && IsClientCT(entity_index))
 	{
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
 	}
-	if (StrEqual(classname, "hegrenade_projectile", false) && GetConVarBool(cvar_customhe))
+	if (StrEqual(classname, "hegrenade_projectile", false) && GetConVarBool(cvar_customhe) && IsClientCT(entity_index))
 	{
 		CreateTimer(0.0, Timer_DefuseGrenade, entity_index);
 		SDKHook(entity_index, SDKHook_StartTouch, StartTouchHegrenade);
@@ -256,74 +260,43 @@ public Action Timer_BuyMenu(Handle timer, any userid) {
 	CloseBuyMenus();
 }
 
-public Action Timer_BuyMenuPlayer(Handle timer, any userid) {
-	int client_index = EntRefToEntIndex(userid);
-	if (IsValidClient(client_index))
-	{
-		ClosePlayerBuyMenu(client_index);
-	}
-}
-
 public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
 	if (!IsPlayerAlive(client_index))
 	return Plugin_Continue;
 	
-	// Disable non-forward movement :3
-	if (vel[1] != 0)
-	vel[1] = 0.0;
-	//Block backward movement if +use is not pressed
-	if (!(buttons & IN_USE))
+	if (IsClientCT(client_index))
 	{
-		if (vel[0] < 0)
-		vel[0] = 0.0;
+		//Change player's animations based on key pressed
+		isWalking[client_index] = (buttons & IN_SPEED) || (buttons & IN_DUCK);
+		isMoving[client_index] = vel[0] > 0.0 || vel[0] < 0.0;
+		if (isMoving[client_index] || (buttons & IN_JUMP) || IsValidEntity(weapons[client_index]) || !(GetEntityFlags(client_index) & FL_ONGROUND))
+		SetRotationLock(client_index, true);
+		else
+		SetRotationLock(client_index, false);
+		
+		if ((buttons & IN_JUMP) && !(GetEntityFlags(client_index) & FL_ONGROUND))
+		{
+			SlowPlayerFall(client_index);
+		}
+		
+		//Block crouch but not crouch-jump
+		if ((buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
+		{
+			buttons &= ~IN_DUCK;
+			return Plugin_Continue;
+		}
 	}
-	
-	//Change player's animations based on key pressed
-	isWalking[client_index] = (buttons & IN_SPEED) || (buttons & IN_DUCK);
-	isMoving[client_index] = vel[0] > 0.0 || vel[0] < 0.0;
-	if (isMoving[client_index] || (buttons & IN_JUMP) || IsValidEntity(weapons[client_index]) || !(GetEntityFlags(client_index) & FL_ONGROUND))
-	SetRotationLock(client_index, true);
 	else
-	SetRotationLock(client_index, false);
-	
-	if ((buttons & IN_JUMP) && !(GetEntityFlags(client_index) & FL_ONGROUND))
 	{
-		SlowPlayerFall(client_index);
+		if ((buttons & IN_BACK) && canBuyAll)
+		{
+			Menu_Buy(client_index, 0);
+		}
 	}
-	
-	//Block crouch but not crouch-jump
-	if ((buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
-	{
-		buttons &= ~IN_DUCK;
-		return Plugin_Continue;
-	}
-	
-	//Disable knife cuts
-	if (StrEqual(currentWeaponName[client_index], "knife", false))
-	{
-		float fUnlockTime = GetGameTime() + 1.0;
-		
-		SetEntPropFloat(client_index, Prop_Send, "m_flNextAttack", fUnlockTime);
-		
-		int knife = GetPlayerWeaponSlot(client_index, CS_SLOT_KNIFE)
-		if (knife > 0)
-		SetEntPropFloat(knife, Prop_Send, "m_flNextPrimaryAttack", fUnlockTime);
-	}
-	
-	
-	// Commands
-	if ((buttons & IN_MOVELEFT) && canBuyAll && canBuy[client_index])
-	{
-		Menu_Buy(client_index, 0);
-	}
-	else if (buttons & IN_MOVERIGHT)
-	{
-		Menu_Taunt(client_index, 0);
-	}
-	
 	return Plugin_Changed;
 }
+
 
 public void Hook_WeaponSwitchPost(int client_index, int weapon_index)
 {
@@ -332,22 +305,23 @@ public void Hook_WeaponSwitchPost(int client_index, int weapon_index)
 		//Hide the real weapon (which can't be moved because of the bonemerge attribute in the model) and creates a fake one, moved to the chicken's side
 		SetWeaponVisibility(client_index, weapon_index, false);
 		CreateFakeWeapon(client_index, weapon_index);
+		GetCurrentWeaponName(client_index, weapon_index);
+		DisplaySwitching(client_index); //Displayer weapon switching to warn players
+		SDKHook(weapon_index, SDKHook_ReloadPost, Hook_WeaponReloadPost);
 	}
 	else
 	{
 		//If player is visible (not a chicken??) make his weapons visible and don't create a fake one
 		SetWeaponVisibility(client_index, weapon_index, true);
 	}
-	GetCurrentWeaponName(client_index, weapon_index);
-	DisplaySwitching(client_index); //Displayer weapon switching to warn players
-	SDKHook(weapon_index, SDKHook_ReloadPost, Hook_WeaponReloadPost);
 }
 
 public void Hook_OnPostThinkPost(int entity_index)
 {
-	if (IsValidClient(entity_index))
+	if (IsValidClient(entity_index) && IsClientCT(entity_index))
 	{
 		SetViewModel(entity_index, GetConVarBool(cvar_viewModel)); //Hide viewmodel based on cvar
+		healthFactor = GetConVarInt(cvar_healthfactor);
 	}
 }
 
@@ -365,7 +339,7 @@ public void Hook_OnGrenadeThinkPost(int entity_index)
 		
 		char buffer[64];
 		GetEntityClassname(entity_index, buffer, sizeof(buffer));
-		if (StrEqual(buffer, "decoy_projectile"))
+		if (StrEqual(buffer, "decoy_projectile") && IsClientCT(client_index))
 		ChickenDecoy(client_index, fOrigin, weapons[client_index]);
 		AcceptEntityInput(entity_index, "Kill");
 	}

@@ -19,29 +19,16 @@
 #define IDLE "#idle"
 #define PANIC "#panic"
 
-char itemNames[][] = {"weapon_hkp2000", "weapon_ssg08", "weapon_smokegrenade", "weapon_decoy", "weapon_tagrenade", "weapon_molotov", "weapon_hegrenade", "weapon_healthshot"};
-char displayNames[][] = {"usp-s", "ssg08", "Chicken Spawner", "Bait", "Detector", "Zombie Egg", "Kamikaze","Health Buff"};
-int itemPrices[sizeof(itemNames)]; 
+char itemNames[][] = {"weapon_tagrenade", "weapon_healthshot"};
+char displayNames[][] = {"Tactical Grenade", "Health Shot"};
 int itemsBrought[MAXPLAYERS + 1][sizeof(itemNames)];
 
 char chickenIdleSounds[][] =  { "ambient/creatures/chicken_idle_01.wav", "ambient/creatures/chicken_idle_02.wav", "ambient/creatures/chicken_idle_03.wav" }
 char chickenPanicSounds[][] =  { "ambient/creatures/chicken_panic_01.wav", "ambient/creatures/chicken_panic_02.wav", "ambient/creatures/chicken_panic_03.wav", "ambient/creatures/chicken_panic_04.wav" }
 
 bool canBuyAll = false;
-bool canBuy[MAXPLAYERS + 1];
 
 Menu playerMenus[MAXPLAYERS];
-
-public void UpdatePrices(Handle[] prices, bool isFFA)
-{
-	for (int i = 0; i < sizeof(itemNames); i++)
-	{
-		if (!isFFA)
-			itemPrices[i] = GetConVarInt(prices[i]);
-		else
-			itemPrices[i] = 0;
-	}	
-}
 
 public void Menu_Taunt(int client_index, int args)
 {
@@ -56,13 +43,13 @@ public void Menu_Taunt(int client_index, int args)
 public void Menu_Buy(int client_index, int args)
 {
 	playerMenus[client_index] = new Menu(MenuHandler_Buy);
-	playerMenus[client_index].SetTitle("Chicken Wars | Buy Menu");
+	playerMenus[client_index].SetTitle("Additional Items");
 	
 	char buffer[64];
 	
 	for (int i = 0; i < sizeof(itemNames); i++)
 	{
-		Format(buffer, sizeof(buffer), "%s | %i $",displayNames[i] ,itemPrices[i]);
+		Format(buffer, sizeof(buffer), "%s",displayNames[i]);
 		playerMenus[client_index].AddItem(itemNames[i], buffer);
 	}
 	
@@ -82,7 +69,6 @@ public void CloseBuyMenus()
 public void ClosePlayerBuyMenu(int client_index)
 {
 	if(IsValidClient(client_index) && playerMenus[client_index] != INVALID_HANDLE){
-		canBuy[client_index] = false;
 		delete playerMenus[client_index];
 	}
 }
@@ -135,40 +121,19 @@ public int MenuHandler_Buy(Menu menu, MenuAction action, int param1, int params)
 
 void BuyWeapon(int client_index, char[] weapon_classname) //Buy weapon if not already bought and have enough money
 {
-	int money = GetEntProp(client_index, Prop_Send, "m_iAccount");
-	
 	for (int i = 0; i < sizeof(itemNames); i++)
 	{
-		if (StrEqual(weapon_classname, itemNames[i]) && money >= itemPrices[i] && itemsBrought[client_index][i] != 1)
+		if (StrEqual(weapon_classname, itemNames[i]) && itemsBrought[client_index][i] != 1)
 		{
-			if (StrEqual(weapon_classname, "weapon_hkp2000"))
-				DropWeapon(client_index, 1);
-			if (StrEqual(weapon_classname, "weapon_ssg08"))
-				DropWeapon(client_index, 0);
-			SetEntProp(client_index, Prop_Send, "m_iAccount", money - itemPrices[i]);
 			GivePlayerItem(client_index, weapon_classname);
 			itemsBrought[client_index][i] = 1;
 		}
-		else if (StrEqual(weapon_classname, itemNames[i]) && money < itemPrices[i])
-		{
-			PrintHintText(client_index, "<font color='#ff0000' size='30'>Not enough money</font>");
-		}
 		else if (StrEqual(weapon_classname, itemNames[i]) && itemsBrought[client_index][i] == 1)
 		{
-			PrintHintText(client_index, "<font color='#ff0000' size='30'>Item already bought</font>");
+			PrintHintText(client_index, "<font color='#ff0000' size='30'>You already have this item</font>");
 		}
 	}
 }
-
-void DropWeapon(int client_index, int slot)
-{
-	int weapon_index = GetPlayerWeaponSlot(client_index, slot);
-	if (weapon_index != -1)
-	{
-		CS_DropWeapon(client_index, weapon_index, false, false);
-	}
-}
-
 
 void PlayRandomPanicSound(int client_index)
 {
