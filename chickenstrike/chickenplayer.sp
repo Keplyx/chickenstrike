@@ -168,7 +168,10 @@ void SetRotationLock(int client_index, bool enabled)
 
 void SetClientSpeed(int client_index, float speed)
 {
-	SetEntPropFloat(client_index, Prop_Send, "m_flLaggedMovementValue", speed); //reduce player's speed (including falling speed)
+	if (IsClientCT(client_index))
+	{
+		SetEntPropFloat(client_index, Prop_Send, "m_flLaggedMovementValue", speed); //reduce player's speed (including falling speed)
+	}
 }
 
 public void SlowPlayerFall(int client_index)

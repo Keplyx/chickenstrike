@@ -174,7 +174,7 @@ public void ResetTeams()
 {
 	for (int i = 1; i < MAXPLAYERS; i++)
 	{
-		if (IsValidClient(i) && IsClientCT(i) && i != chickenOP)
+		if (IsClientCT(i) && i != chickenOP)
 		{
 			ChangeClientTeam(i, CS_TEAM_T);
 			CS_RespawnPlayer(i);
@@ -198,11 +198,12 @@ public void OnClientDisconnect(int client_index)
 
 public void OnEntityCreated(int entity_index, const char[] classname)
 {
-	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy) && IsClientCT(entity_index))
+	
+	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
 	{
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
 	}
-	if (StrEqual(classname, "hegrenade_projectile", false) && GetConVarBool(cvar_customhe) && IsClientCT(entity_index))
+	if (StrEqual(classname, "hegrenade_projectile", false) && GetConVarBool(cvar_customhe))
 	{
 		CreateTimer(0.0, Timer_DefuseGrenade, entity_index);
 		SDKHook(entity_index, SDKHook_StartTouch, StartTouchHegrenade);
@@ -241,7 +242,7 @@ public Action Timer_DefuseGrenade(Handle timer, any ref)
 
 public Action Timer_WelcomeMessage(Handle timer, int client_index)
 {
-	if (cvar_welcome_message.BoolValue && IsClientConnected(client_index) && IsClientInGame(client_index))
+	if (cvar_welcome_message.BoolValue && IsValidClient(client_index))
 	{
 		//Welcome message (white text in red box)
 		CPrintToChat(client_index, "{darkred}********************************");
