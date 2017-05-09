@@ -64,19 +64,20 @@ public void SetModel(int client_index, int weapon_index, char[] classname)
 		SetWeaponPos(client_index, 1);
 	}
 	else if (StrEqual(classname, "weapon_healthshot", false))
-		{
-		char modelName[128];
-		GetEntPropString(weapon_index, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
-		SetEntityModel(weapons[client_index], modelName);
+	{
 		SetWeaponPos(client_index, 2);
+	}
+	else if (StrEqual(classname, "weapon_knife", false))
+	{
+		SetWeaponPos(client_index, 3);
 	}
 	else
 	{
-		char modelName[128];
-		GetEntPropString(weapon_index, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
-		SetEntityModel(weapons[client_index], modelName);
 		SetWeaponPos(client_index, 0);
 	}
+	char modelName[128];
+	GetEntPropString(weapon_index, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
+	SetEntityModel(weapons[client_index], modelName);
 }
 
 public void SetWeaponPos(int client_index, int type)
@@ -102,6 +103,14 @@ public void SetWeaponPos(int client_index, int type)
 		pos[1] = -23.0;
 		pos[2] = 5.0;
 		rot[2] = 90.0;
+	}
+	else if (type == 3) // knife
+	{
+		pos[0] = 6.0;
+		pos[1] = 5.0;
+		pos[2] = 19.0;
+		rot[0] = 90.0;
+		rot[1] = 90.0;
 	}
 	
 	TeleportEntity(weapons[client_index], pos, rot, NULL_VECTOR);

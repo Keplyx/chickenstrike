@@ -227,7 +227,7 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 	{
 		//Change player's animations based on key pressed
 		isWalking[client_index] = (buttons & IN_SPEED) || (buttons & IN_DUCK);
-		isMoving[client_index] = vel[0] > 0.0 || vel[0] < 0.0;
+		isMoving[client_index] = vel[0] > 0.0 || vel[0] < 0.0 || vel[1] > 0.0 || vel[1] < 0.0;
 		if (isMoving[client_index] || (buttons & IN_JUMP) || IsValidEntity(weapons[client_index]) || !(GetEntityFlags(client_index) & FL_ONGROUND))
 		SetRotationLock(client_index, true);
 		else
