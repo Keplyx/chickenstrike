@@ -99,6 +99,12 @@ public void OnPluginStart()
 	//LoopIngameClients(i)
 	//	OnClientPostAdminCheck(i);
 	
+	for(int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidClient(i) && !IsFakeClient(i))
+			OnClientPostAdminCheck(i);
+	}
+	
 	if (lateload)
 	ServerCommand("mp_restartgame 1");
 	
