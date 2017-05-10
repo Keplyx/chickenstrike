@@ -182,13 +182,6 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 		int currentFlags = GetEntityFlags(client_index);
 		if (!(currentFlags & FL_ONGROUND))
 		{
-			//Set client air speed
-			if (isWalking[client_index])
-				SetClientSpeed(client_index, chickenWalkSpeed);
-			else if (isSprinting[client_index])
-				SetClientSpeed(client_index, chickenSprintSpeed);
-			else
-				SetClientSpeed(client_index, chickenRunSpeed);
 			//If client started fly, change his animation (falling), or set it back if 1s passed
 			if (flyCounter[client_index] == 0)
 			{
