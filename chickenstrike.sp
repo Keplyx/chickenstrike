@@ -136,10 +136,18 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 		//Get player's viewmodel for future hiding
 		clientsViewmodels[client_index] = GetViewModelIndex(client_index);
 		//Transformation!!
-		SetChicken(client_index);
+		int ref = EntIndexToEntRef(client_index);
+		CreateTimer(0.1, Timer_SetChicken, ref);
 	}
 	//Remove player collisions
 	SetEntData(client_index, collisionOffsets, 2, 1, true);
+}
+
+public Action Timer_SetChicken(Handle timer, any ref) 
+{
+	int client_index = EntRefToEntIndex(ref);
+	if (IsValidClient(client_index) && IsClientCT(client_index))
+		SetChicken(client_index);
 }
 
 public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
@@ -151,7 +159,8 @@ public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	ResetAllItems();
-	ChooseOP();
+	if (GetTeamClientCount(CS_TEAM_T) > 1 || GetTeamClientCount(CS_TEAM_CT) > 1)
+		ChooseOP();
 	CPrintToChatAll("{yellow}Open the buy menu bu pressing {white}[S]");
 	//Setup buy menu
 	canBuyAll = true;
@@ -219,8 +228,8 @@ public Action Timer_WelcomeMessage(Handle timer, int client_index)
 	}
 }
 
-public Action Timer_BuyMenu(Handle timer, any userid) {
-	
+public Action Timer_BuyMenu(Handle timer, any userid) 
+{
 	CloseBuyMenus();
 }
 
@@ -233,12 +242,7 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 	{
 		//Change player's animations based on key pressed
 		isWalking[client_index] = (buttons & IN_SPEED) || (buttons & IN_DUCK);
-		isMoving[client_index] = vel[0] > 0.0 || vel[0] < 0.0 || vel[1] > 0.0 || vel[1] < 0.0;
-		if (isMoving[client_index] || (buttons & IN_JUMP) || IsValidEntity(weapons[client_index]) || !(GetEntityFlags(client_index) & FL_ONGROUND))
-		SetRotationLock(client_index, true);
-		else
-		SetRotationLock(client_index, false);
-		
+		isMoving[client_index] = vel[0] > 0.0 || vel[0] < 0.0 || vel[1] > 0.0 || vel[1] < 0.0;		
 		if ((buttons & IN_JUMP) && !(GetEntityFlags(client_index) & FL_ONGROUND))
 		{
 			SlowPlayerFall(client_index);

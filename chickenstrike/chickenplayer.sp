@@ -147,31 +147,9 @@ void ChickenDeath(int client_index) //Fake a chicken's death
 	feathersTimer[client_index] = CreateTimer(3.0, Timer_DestroyParticles, client_index);
 }
 
-void SetRotationLock(int client_index, bool enabled)
-{
-    float nullRot[3];
-    float pos[3];
-    if (enabled)
-    {
-        SetVariantString("!activator");
-        AcceptEntityInput(chickens[client_index], "SetParent", client_index, chickens[client_index], 0);
-        GetClientAbsOrigin(client_index, pos);
-        TeleportEntity(chickens[client_index], NULL_VECTOR, nullRot, NULL_VECTOR);
-    }
-    else
-    {
-        AcceptEntityInput(chickens[client_index], "SetParent");
-        GetClientAbsOrigin(client_index, pos);
-        TeleportEntity(chickens[client_index], pos, NULL_VECTOR, NULL_VECTOR);
-    }
-} 
-
 void SetClientSpeed(int client_index, float speed)
 {
-	if (IsClientCT(client_index))
-	{
-		SetEntPropFloat(client_index, Prop_Send, "m_flLaggedMovementValue", speed); //reduce player's speed (including falling speed)
-	}
+	SetEntPropFloat(client_index, Prop_Send, "m_flLaggedMovementValue", speed); //reduce player's speed (including falling speed)
 }
 
 public void SlowPlayerFall(int client_index)
