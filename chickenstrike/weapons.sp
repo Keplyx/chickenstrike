@@ -25,13 +25,13 @@ public void DisplaySwitching(int client_index)
 	if (StrEqual(currentWeaponName[client_index], "knife", false))
 	{
 		//Tell hidden
-		PrintHintText(client_index, "<font color='#00ff00' size='20'>Holstered weapon</font><br><font color='#00ff00' size='30'>You are hidden</font>");
+		PrintHintText(client_index, "<font color='#ffffff' size='30'>Holstered weapon</font>");
 	}
 	else
 	{
 		//Tell visible + weapon switched to
 		char buffer[128];
-		Format(buffer, sizeof(buffer), "<font color='#ffff00' size='20'>%s drawn!</font><br><font color='#ff0000' size='30'>You are visible!</font>", currentWeaponName[client_index]);
+		Format(buffer, sizeof(buffer), "<font color='#ffffff' size='30'>%s drawn!</font>", currentWeaponName[client_index]);
 		PrintHintText(client_index, buffer);
 	}
 }
