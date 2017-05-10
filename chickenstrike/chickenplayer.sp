@@ -39,10 +39,13 @@ bool wasRunning[MAXPLAYERS + 1] = false;
 bool isWalking[MAXPLAYERS + 1] = false;
 bool wasWalking[MAXPLAYERS + 1] = false;
 bool isMoving[MAXPLAYERS + 1] = false;
+bool isSprinting[MAXPLAYERS + 1] = false;
+bool wasSprinting[MAXPLAYERS + 1] = false;
 int flyCounter[MAXPLAYERS + 1];
 
 //Chicken variables
 int healthFactor;
+float chickenSprintSpeed;
 
 //Chicken constants
 const float chickenRunSpeed = 0.36; //Match real chicken speed (kind of)  
@@ -147,7 +150,7 @@ void ChickenDeath(int client_index) //Fake a chicken's death
 	feathersTimer[client_index] = CreateTimer(3.0, Timer_DestroyParticles, client_index);
 }
 
-void SetClientSpeed(int client_index, float speed)
+public void SetClientSpeed(int client_index, float speed)
 {
 	SetEntPropFloat(client_index, Prop_Send, "m_flLaggedMovementValue", speed); //reduce player's speed (including falling speed)
 }
@@ -174,27 +177,36 @@ public void SlowPlayerFall(int client_index)
 public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling anim each 1s (doesn't loop)
 {
 	int client_index = GetClientOfUserId(userid);
-	if (client_index && IsClientInGame(client_index))
+	if (IsValidClient(client_index) && IsValidEntity(chickens[client_index]))
 	{
 		int currentFlags = GetEntityFlags(client_index);
-		
-		//If client started fly, change his animation (falling), or set it back if 1s passed
-		if (!(currentFlags & FL_ONGROUND) && flyCounter[client_index] == 0)
+		if (!(currentFlags & FL_ONGROUND))
 		{
-			SetVariantString(chickenSec[4]); AcceptEntityInput(chickens[client_index], "SetAnimation");
-			wasRunning[client_index] = false;
-			wasIdle[client_index] = false;
-			wasWalking[client_index] = false;
-			flyCounter[client_index]++;
-			SetClientSpeed(client_index, chickenRunSpeed);
-			//PrintToChat(client_index, "Falling");
-		}
-		//If flying, count time passed
-		else if (!(currentFlags & FL_ONGROUND))
-		{
-			flyCounter[client_index]++;
-			if (flyCounter[client_index] == 9)
-				flyCounter[client_index] = 0;
+			//Set client air speed
+			if (isWalking[client_index])
+				SetClientSpeed(client_index, chickenWalkSpeed);
+			else if (isSprinting[client_index])
+				SetClientSpeed(client_index, chickenSprintSpeed);
+			else
+				SetClientSpeed(client_index, chickenRunSpeed);
+			//If client started fly, change his animation (falling), or set it back if 1s passed
+			if (flyCounter[client_index] == 0)
+			{
+				SetVariantString(chickenSec[4]); AcceptEntityInput(chickens[client_index], "SetAnimation");
+				wasRunning[client_index] = false;
+				wasIdle[client_index] = false;
+				wasWalking[client_index] = false;
+				wasSprinting[client_index] = false;
+				flyCounter[client_index]++;
+				//PrintToChat(client_index, "Falling");
+			}
+			//If flying, count time passed
+			else
+			{
+				flyCounter[client_index]++;
+				if (flyCounter[client_index] == 9)
+					flyCounter[client_index] = 0;
+			}
 		}
 		//If grounded
 		else if (currentFlags & FL_ONGROUND)
@@ -207,28 +219,42 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 				wasRunning[client_index] = false;
 				wasIdle[client_index] = true;
 				wasWalking[client_index] = false;
+				wasSprinting[client_index] = false;
 				SetClientSpeed(client_index, chickenRunSpeed);
-				//PrintToChat(client_index, "Idle");
+				PrintToChat(client_index, "Idle");
 			}
-			//if pressing the walk key, is not already walking, is moving, set him walking   
-			else if (isWalking[client_index] && !wasWalking[client_index] && isMoving[client_index])
+			//if pressing the walk key, is not already walking, set him walking   
+			else if (isWalking[client_index] && !wasWalking[client_index])
 			{
 				SetVariantString(chickenSec[0]); AcceptEntityInput(chickens[client_index], "SetAnimation");
 				wasRunning[client_index] = false;
 				wasIdle[client_index] = false;
 				wasWalking[client_index] = true;
+				wasSprinting[client_index] = false;
 				SetClientSpeed(client_index, chickenWalkSpeed);
-				//PrintToChat(client_index, "Walking");
+				PrintToChat(client_index, "Walking");
 			}
-			//if is not pressing walk, not already running, is moving, set him running     
-			else if (!isWalking[client_index] && !wasRunning[client_index] && isMoving[client_index])
+			//if is not pressing walk, pressing sprint, not already sprinting, set him sprinting     
+			else if (!isWalking[client_index] && isSprinting[client_index] && !wasSprinting[client_index])
+			{
+				SetVariantString(chickenSec[1]); AcceptEntityInput(chickens[client_index], "SetAnimation");
+				wasRunning[client_index] = false;
+				wasIdle[client_index] = false;
+				wasWalking[client_index] = false;
+				wasSprinting[client_index] = true;
+				SetClientSpeed(client_index, chickenSprintSpeed);
+				PrintToChat(client_index, "Sprinting");
+			}
+			//if is not pressing walk, not pressing sprint, not already running, set him running     
+			else if (!isWalking[client_index] && !isSprinting[client_index] && !wasRunning[client_index] && isMoving[client_index])
 			{
 				SetVariantString(chickenSec[1]); AcceptEntityInput(chickens[client_index], "SetAnimation");
 				wasRunning[client_index] = true;
 				wasIdle[client_index] = false;
 				wasWalking[client_index] = false;
+				wasSprinting[client_index] = false;
 				SetClientSpeed(client_index, chickenRunSpeed);
-				//PrintToChat(client_index, "Running");
+				PrintToChat(client_index, "Running");
 			}
 		}
 		lastFlags[client_index] = currentFlags;

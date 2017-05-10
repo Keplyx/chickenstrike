@@ -135,7 +135,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	{
 		//Get player's viewmodel for future hiding
 		clientsViewmodels[client_index] = GetViewModelIndex(client_index);
-		//Transformation!!
+		// Set the player to a chicken after a little delay, so every player is on T
 		int ref = EntIndexToEntRef(client_index);
 		CreateTimer(0.1, Timer_SetChicken, ref);
 	}
@@ -146,6 +146,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 public Action Timer_SetChicken(Handle timer, any ref) 
 {
 	int client_index = EntRefToEntIndex(ref);
+	//Transformation!!
 	if (IsValidClient(client_index) && IsClientCT(client_index))
 		SetChicken(client_index);
 }
@@ -159,6 +160,7 @@ public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	ResetAllItems();
+	// Prevent the game from entering a restart game loop if only 2 players
 	if (GetTeamClientCount(CS_TEAM_T) > 1 || GetTeamClientCount(CS_TEAM_CT) > 1)
 		ChooseOP();
 	CPrintToChatAll("{yellow}Open the buy menu bu pressing {white}[S]");
@@ -241,13 +243,14 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 	if (IsClientCT(client_index))
 	{
 		//Change player's animations based on key pressed
-		isWalking[client_index] = (buttons & IN_SPEED) || (buttons & IN_DUCK);
-		isMoving[client_index] = vel[0] > 0.0 || vel[0] < 0.0 || vel[1] > 0.0 || vel[1] < 0.0;		
+		isMoving[client_index] = (vel[0] > 0.0 || vel[0] < 0.0 || vel[1] > 0.0 || vel[1] < 0.0);
+		isWalking[client_index] = (buttons & IN_SPEED) && !(buttons & IN_DUCK) && isMoving[client_index];
+		isSprinting[client_index] = (buttons & IN_DUCK) && isMoving[client_index];
+		
 		if ((buttons & IN_JUMP) && !(GetEntityFlags(client_index) & FL_ONGROUND))
 		{
 			SlowPlayerFall(client_index);
 		}
-		
 		//Block crouch but not crouch-jump
 		if ((buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
 		{
@@ -290,6 +293,7 @@ public void Hook_OnPostThinkPost(int entity_index)
 	{
 		SetViewModel(entity_index, GetConVarBool(cvar_viewModel)); //Hide viewmodel based on cvar
 		healthFactor = GetConVarInt(cvar_healthfactor);
+		chickenSprintSpeed = GetConVarFloat(cvar_sprintspeed);
 	}
 }
 
