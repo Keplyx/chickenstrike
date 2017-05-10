@@ -173,6 +173,23 @@ public void SlowPlayerFall(int client_index)
 	}
 }
 
+public void SuperJump(int client_index)
+{
+	float vel[3];
+	GetEntPropVector(client_index, Prop_Data, "m_vecVelocity", vel);
+	vel[2] += 200.0;
+	TeleportEntity(client_index, NULL_VECTOR, NULL_VECTOR, vel);
+}
+
+public void Dash(int client_index)
+{
+	float vel[3];
+	float ang[3];
+	GetClientAbsAngles(client_index, ang);
+	GetAngleVectors(ang, vel, NULL_VECTOR, NULL_VECTOR);
+	ScaleVector(vel, 700.0);
+	TeleportEntity(client_index, NULL_VECTOR, NULL_VECTOR, vel);
+}
 
 public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling anim each 1s (doesn't loop)
 {
@@ -182,6 +199,7 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 		int currentFlags = GetEntityFlags(client_index);
 		if (!(currentFlags & FL_ONGROUND))
 		{
+			SetClientSpeed(client_index, 1.0);
 			//If client started fly, change his animation (falling), or set it back if 1s passed
 			if (flyCounter[client_index] == 0)
 			{
@@ -214,7 +232,7 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 				wasWalking[client_index] = false;
 				wasSprinting[client_index] = false;
 				SetClientSpeed(client_index, chickenRunSpeed);
-				PrintToChat(client_index, "Idle");
+				//PrintToChat(client_index, "Idle");
 			}
 			//if pressing the walk key, is not already walking, set him walking   
 			else if (isWalking[client_index] && !wasWalking[client_index])
@@ -225,7 +243,7 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 				wasWalking[client_index] = true;
 				wasSprinting[client_index] = false;
 				SetClientSpeed(client_index, chickenWalkSpeed);
-				PrintToChat(client_index, "Walking");
+				//PrintToChat(client_index, "Walking");
 			}
 			//if is not pressing walk, pressing sprint, not already sprinting, set him sprinting     
 			else if (!isWalking[client_index] && isSprinting[client_index] && !wasSprinting[client_index])
@@ -236,7 +254,7 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 				wasWalking[client_index] = false;
 				wasSprinting[client_index] = true;
 				SetClientSpeed(client_index, chickenSprintSpeed);
-				PrintToChat(client_index, "Sprinting");
+				//PrintToChat(client_index, "Sprinting");
 			}
 			//if is not pressing walk, not pressing sprint, not already running, set him running     
 			else if (!isWalking[client_index] && !isSprinting[client_index] && !wasRunning[client_index] && isMoving[client_index])
@@ -247,7 +265,7 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 				wasWalking[client_index] = false;
 				wasSprinting[client_index] = false;
 				SetClientSpeed(client_index, chickenRunSpeed);
-				PrintToChat(client_index, "Running");
+				//PrintToChat(client_index, "Running");
 			}
 		}
 		lastFlags[client_index] = currentFlags;

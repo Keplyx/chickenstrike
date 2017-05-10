@@ -251,6 +251,16 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 		{
 			SlowPlayerFall(client_index);
 		}
+		// Super jump
+		if ((buttons & IN_JUMP) && (buttons & IN_SPEED) && (GetEntityFlags(client_index) & FL_ONGROUND))
+		{
+			SuperJump(client_index);
+		}
+		// Dash
+		if ((buttons & IN_JUMP) && (buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
+		{
+			Dash(client_index);
+		}
 		//Block crouch but not crouch-jump
 		if ((buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
 		{
