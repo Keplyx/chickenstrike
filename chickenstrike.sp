@@ -131,16 +131,18 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
+	int ref = EntIndexToEntRef(client_index);
 	if (IsClientCT(client_index))
 	{
 		//Get player's viewmodel for future hiding
 		clientsViewmodels[client_index] = GetViewModelIndex(client_index);
 		// Set the player to a chicken after a little delay, so every player is on T
-		int ref = EntIndexToEntRef(client_index);
 		CreateTimer(0.1, Timer_SetChicken, ref);
 	}
 	//Remove player collisions
 	SetEntData(client_index, collisionOffsets, 2, 1, true);
+	// Set money to max
+	CreateTimer(0.1, Timer_SetMoney, ref);
 }
 
 public Action Timer_SetChicken(Handle timer, any ref) 
@@ -149,6 +151,14 @@ public Action Timer_SetChicken(Handle timer, any ref)
 	//Transformation!!
 	if (IsValidClient(client_index) && IsClientCT(client_index))
 		SetChicken(client_index);
+}
+
+public Action Timer_SetMoney(Handle timer, any ref) 
+{
+	int client_index = EntRefToEntIndex(ref);
+	//Money
+	if (IsValidClient(client_index))
+		SetEntProp(client_index, Prop_Send, "m_iAccount", 16000);
 }
 
 public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
