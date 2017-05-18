@@ -30,6 +30,7 @@
 #include "chickenstrike/customweapons.sp"
 #include "chickenstrike/weapons.sp"
 #include "chickenstrike/menus.sp"
+#include "chickenstrike/hostages.sp"
 #include "chickenstrike/init.sp"
 #include "chickenstrike/utils.sp"
 
@@ -170,6 +171,8 @@ public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	ResetAllItems();
+	SpawnEggs();
+	
 	// Prevent the game from entering a restart game loop if only 2 players
 	if (GetTeamClientCount(CS_TEAM_T) > 1 || GetTeamClientCount(CS_TEAM_CT) > 1)
 		ChooseOP();
