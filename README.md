@@ -7,3 +7,5 @@ Inspired by the animation [**Chicken Strike [CS:GO SFM]**](https://www.youtube.c
 # WIP
 
 ## Nothing to see yet
+
+[Beta Preview](https://www.youtube.com/watch?v=6kbxS_Vtml0&feature=youtu.be)
