@@ -22,7 +22,6 @@
 #include <sdkhooks>
 #include <cstrike>
 #include <csgocolors>
-#include <menus>
 
 #pragma newdecls required;
 

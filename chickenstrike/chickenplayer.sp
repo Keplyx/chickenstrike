@@ -16,6 +16,8 @@
 *   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sdktools>
+
 char chickenModel[] = "models/chicken/chicken.mdl";
 char chickenDeathSounds[][] =  { "ambient/creatures/chicken_death_01.wav", "ambient/creatures/chicken_death_02.wav", "ambient/creatures/chicken_death_03.wav" }
 char chickenSec[][] =  { "ACT_WALK", "ACT_RUN", "ACT_IDLE", "ACT_JUMP", "ACT_GLIDE", "ACT_LAND", "ACT_HOP" }

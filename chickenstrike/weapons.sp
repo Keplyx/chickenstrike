@@ -16,6 +16,8 @@
 *   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sdktools>
+
 int weapons[MAXPLAYERS];
 int clientsViewmodels[MAXPLAYERS + 1];
 char currentWeaponName[MAXPLAYERS + 1][32];

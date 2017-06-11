@@ -16,6 +16,8 @@
 *   along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sdktools>
+
 char fridgeModel[] = "models/props_urban/fridge002.mdl";
 int eggs = 0;
 
