@@ -17,54 +17,150 @@
 */
 
 #include <sdktools>
+#include <sdkhooks>
 
-char fridgeModel[] = "models/props_urban/fridge002.mdl";
 int eggs = 0;
+char eggsModel[] = "models/props/cs_italy/eggplant01.mdl";
 
+char carryHModel[] = "models/hostage/hostage_carry.mdl";
+
+ArrayList hostagesList;
+int eggsList[20];
+char modelsList[20][128];
+float spawnPointsList[20][2][3];
+// Place eggs next to hostages, chicken will save eggs instead of hostage
 
 public void SpawnEggs()
 {
-//	RemoveEggs();
-	int fridge = FindFridge();
-	if (IsValidEntity(fridge) && fridge > MAXPLAYERS)
-	{
-		eggs = CreateEntityByName("hostage_entity");
-		if (IsValidEntity(eggs))
-		{
-			PrintToChatAll("Spawning eggs");
-			float pos[3];
-			GetEntPropVector(fridge, Prop_Send, "m_vecOrigin", pos);
-			TeleportEntity(eggs, pos, NULL_VECTOR, NULL_VECTOR);
-		
-			DispatchSpawn(eggs);
-			ActivateEntity(eggs);
-		}
-	}
-}
-
-public void RemoveEggs() // Crashing server
-{
-	if (IsValidEntity(eggs))
-	{
-		RemoveEdict(eggs);
-	}
-}
-
-int FindFridge() //Can't find fridge model
-{
-	for (int i = MAXPLAYERS; i < 2048; i++)
+	hostagesList = new ArrayList();
+	ResetData();
+	for (int i = MAXPLAYERS; i <= GetMaxEntities(); i++)
 	{
 		if (IsValidEntity(i))
 		{
-			char model_name[128];
-			GetEntPropString(i, Prop_Data, "m_ModelName", model_name, sizeof(model_name));
-			PrintToServer("%s", model_name);
-			if (StrEqual(model_name, fridgeModel)){
-				PrintToChatAll("%s", model_name);
-				return i;
+			char classname[64];
+			if(GetEdictClassname(i, classname, sizeof(classname))){
+				if(StrEqual(classname, "hostage_entity",false))
+				{
+					hostagesList.Push(i);
+					CreateEgg(i);
+					GetHostageModel(i);
+					GetHostageSpawn(i);
+				}
 			}
 		}
 	}
-	PrintToChatAll("no fridge found");
-	return 0;
+}
+
+void GetHostageSpawn(int hostage)
+{
+	int i = hostagesList.FindValue(hostage);
+	GetEntPropVector(hostage, Prop_Send, "m_vecOrigin", spawnPointsList[i][0]);
+	GetEntPropVector(hostage, Prop_Send, "m_angRotation", spawnPointsList[i][1]);
+	
+}
+
+void GetHostageModel(int hostage)
+{
+	int i = hostagesList.FindValue(hostage);
+	char modelName[PLATFORM_MAX_PATH];
+	GetEntPropString(hostage, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
+	Format(modelsList[i], sizeof(modelsList[]), "%s", modelName);
+	//PrintToServer("hostage model: %s", modelsList[i]);
+}
+
+
+void CreateEgg(int hostage)
+{
+	int i = hostagesList.FindValue(hostage);
+	eggs = CreateEntityByName("prop_dynamic_override");
+	if (IsValidEntity(eggs))
+	{
+		SetEntityModel(eggs, eggsModel);
+		DispatchKeyValue(eggs, "solid", "0");
+		float pos[3];
+		GetEntPropVector(hostage, Prop_Send, "m_vecOrigin", pos);
+		pos[0] += 20;
+		TeleportEntity(eggs, pos, NULL_VECTOR, NULL_VECTOR);
+		//Spawn it!
+		DispatchSpawn(eggs);
+		ActivateEntity(eggs);
+		eggsList[i] = eggs;
+	}
+}
+
+
+public void RescueHostage(int client_index, int hostage)
+{
+	int i = hostagesList.FindValue(hostage);
+	
+	SetVariantString(""); AcceptEntityInput(eggsList[i], "SetParent");
+	float pos[3];
+	GetClientAbsOrigin(client_index, pos);
+	TeleportEntity(eggsList[i], pos, NULL_VECTOR, NULL_VECTOR);
+}
+
+
+public void GrabHostage(int client_index, int hostage)
+{
+	int i = hostagesList.FindValue(hostage);
+	// Prevent hostage from appearing on death/rescue
+	SDKHook(hostage, SDKHook_SetTransmit, Hook_SetTransmit);
+	
+	CreateFakeHostage(hostage);
+	//Move eggs on chicken
+	SetVariantString("!activator"); AcceptEntityInput(eggsList[i], "SetParent", client_index, eggsList[i], 0);
+	//Reset rotation and pos
+	float rot[3];
+	float pos[3];
+	pos[2] += 20;
+	TeleportEntity(eggsList[i], pos, rot, NULL_VECTOR);
+	
+	// Hide the real hostage
+	CreateTimer(0.1, HideCarriedHostage, client_index);
+}
+
+public void CreateFakeHostage(int hostage)
+{
+	int i = hostagesList.FindValue(hostage);
+	int fakeH = CreateEntityByName("prop_dynamic_override");
+	if (IsValidEntity(fakeH))
+	{
+		SetEntityModel(fakeH, modelsList[i]);
+		//DispatchKeyValue(fakeH, "solid", "1"); // Can get the player stuck
+		TeleportEntity(fakeH, spawnPointsList[i][0], spawnPointsList[i][1], NULL_VECTOR);
+		//Spawn it!
+		DispatchSpawn(fakeH);
+		ActivateEntity(fakeH);
+		SetVariantString("Waiting"); AcceptEntityInput(fakeH, "SetAnimation");
+	}
+}
+
+public Action HideCarriedHostage(Handle timer, any ref)
+{
+	for (int i = MAXPLAYERS; i <= GetMaxEntities(); i++)
+	{
+		if (IsValidEntity(i))
+		{
+			char modelName[PLATFORM_MAX_PATH];
+			GetEntPropString(i, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
+			if(StrEqual(carryHModel, modelName,false))
+			{
+				SDKHook(i, SDKHook_SetTransmit, Hook_SetTransmit);
+			}
+		}
+	}
+}
+
+public void ResetData() // Crashing server
+{
+	for (int i = 0; i < sizeof(eggsList); i++)
+	{
+		if (IsValidEdict(eggsList[i]) && eggsList[i] != 0)
+		{
+			RemoveEdict(eggsList[i]);
+		}
+		eggsList[i] = 0;
+		modelsList[i] = "";
+	}
 }

@@ -86,11 +86,15 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	PrecacheModel(chickenModel, true);
+	PrecacheModel(eggsModel, true);
 	
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_team", Event_PlayerTeam);
 	HookEvent("round_start", Event_RoundStart);
+	HookEvent("hostage_follows", Event_HostageFollow);
+	HookEvent("hostage_rescued", Event_HostageRescue);
+	
 	CreateConVars(VERSION);
 	
 	collisionOffsets = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
@@ -167,6 +171,20 @@ public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast
 	DisableChicken(client_index);
 }
 
+public void Event_HostageFollow(Event event, const char[] name, bool dontBroadcast)
+{
+	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
+	int hostage = GetEventInt(event, "hostage");
+	GrabHostage(client_index, hostage);
+}
+
+public void Event_HostageRescue(Event event, const char[] name, bool dontBroadcast)
+{
+	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
+	int hostage = GetEventInt(event, "hostage");
+	RescueHostage(client_index, hostage);
+}
+
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	ResetAllItems();
@@ -227,6 +245,10 @@ public void OnEntityCreated(int entity_index, const char[] classname)
 	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
 	{
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
+	}
+	else if (StrEqual(classname, "hostage_entity", false))
+	{
+		
 	}
 }
 
