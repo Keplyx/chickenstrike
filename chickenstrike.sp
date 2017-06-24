@@ -281,19 +281,22 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 		isWalking[client_index] = (buttons & IN_SPEED) && !(buttons & IN_DUCK) && isMoving[client_index];
 		isSprinting[client_index] = (buttons & IN_DUCK) && isMoving[client_index];
 		
-		if ((buttons & IN_JUMP) && !(GetEntityFlags(client_index) & FL_ONGROUND))
+		if (!hasHostage[client_index])
 		{
-			SlowPlayerFall(client_index);
-		}
-		// Super jump
-		if ((buttons & IN_JUMP) && (buttons & IN_SPEED) && (GetEntityFlags(client_index) & FL_ONGROUND))
-		{
-			SuperJump(client_index);
-		}
-		// Dash
-		if ((buttons & IN_JUMP) && (buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
-		{
-			Dash(client_index);
+			if ((buttons & IN_JUMP) && !(GetEntityFlags(client_index) & FL_ONGROUND))
+			{
+				SlowPlayerFall(client_index);
+			}
+			// Super jump
+			if ((buttons & IN_JUMP) && (buttons & IN_SPEED) && (GetEntityFlags(client_index) & FL_ONGROUND))
+			{
+				SuperJump(client_index);
+			}
+			// Dash
+			if ((buttons & IN_JUMP) && (buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
+			{
+				Dash(client_index);
+			}
 		}
 		//Block crouch but not crouch-jump
 		if ((buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))

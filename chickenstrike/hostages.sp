@@ -23,11 +23,15 @@ int eggs = 0;
 char eggsModel[] = "models/props/cs_italy/eggplant01.mdl";
 
 char carryHModel[] = "models/hostage/hostage_carry.mdl";
+char armHModel[] = "models/hostage/v_hostage_arm.mdl";
 
 ArrayList hostagesList;
 int eggsList[20];
 char modelsList[20][128];
 float spawnPointsList[20][2][3];
+
+bool hasHostage[MAXPLAYERS + 1];
+
 // Place eggs next to hostages, chicken will save eggs instead of hostage
 
 public void SpawnEggs()
@@ -93,7 +97,7 @@ void CreateEgg(int hostage)
 public void RescueHostage(int client_index, int hostage)
 {
 	int i = hostagesList.FindValue(hostage);
-	
+	hasHostage[client_index] = false;
 	SetVariantString(""); AcceptEntityInput(eggsList[i], "SetParent");
 	float pos[3];
 	GetClientAbsOrigin(client_index, pos);
@@ -104,6 +108,7 @@ public void RescueHostage(int client_index, int hostage)
 public void GrabHostage(int client_index, int hostage)
 {
 	int i = hostagesList.FindValue(hostage);
+	hasHostage[client_index] = true;
 	// Prevent hostage from appearing on death/rescue
 	SDKHook(hostage, SDKHook_SetTransmit, Hook_SetTransmit);
 	
@@ -120,7 +125,7 @@ public void GrabHostage(int client_index, int hostage)
 	CreateTimer(0.1, HideCarriedHostage, client_index);
 }
 
-public void CreateFakeHostage(int hostage)
+void CreateFakeHostage(int hostage)
 {
 	int i = hostagesList.FindValue(hostage);
 	int fakeH = CreateEntityByName("prop_dynamic_override");
@@ -144,7 +149,7 @@ public Action HideCarriedHostage(Handle timer, any ref)
 		{
 			char modelName[PLATFORM_MAX_PATH];
 			GetEntPropString(i, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
-			if(StrEqual(carryHModel, modelName,false))
+			if(StrEqual(carryHModel, modelName,false) || StrEqual(armHModel, modelName,false))
 			{
 				SDKHook(i, SDKHook_SetTransmit, Hook_SetTransmit);
 			}
@@ -152,7 +157,7 @@ public Action HideCarriedHostage(Handle timer, any ref)
 	}
 }
 
-public void ResetData() // Crashing server
+void ResetData() // Crashing server
 {
 	for (int i = 0; i < sizeof(eggsList); i++)
 	{
@@ -163,4 +168,9 @@ public void ResetData() // Crashing server
 		eggsList[i] = 0;
 		modelsList[i] = "";
 	}
+	for (int i = 0; i < sizeof(hasHostage); i++)
+	{
+		hasHostage[i] = false;
+	}
+	
 }
