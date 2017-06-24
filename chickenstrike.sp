@@ -67,6 +67,7 @@ int collisionOffsets;
 bool lateload;
 
 int chickenOP;
+int nextChickenOP = -1;
 
 public Plugin myinfo =
 {
@@ -98,6 +99,7 @@ public void OnPluginStart()
 	HookEvent("hostage_rescued", Event_HostageRescue);
 	
 	CreateConVars(VERSION);
+	RegisterCommands();
 	
 	collisionOffsets = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
@@ -176,9 +178,15 @@ public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast
 	SpawnEggs();
 	
 	// Prevent the game from entering a restart game loop if only 2 players
-	if (GetTeamClientCount(CS_TEAM_T) > 1 || GetTeamClientCount(CS_TEAM_CT) > 1)
+	if ((GetTeamClientCount(CS_TEAM_T) > 1 || GetTeamClientCount(CS_TEAM_CT) > 1) && nextChickenOP <= 0)
 		ChooseOP();
-	CPrintToChatAll("{yellow}Open the buy menu bu pressing {white}[S]");
+	else if (nextChickenOP > 0)
+	{
+		chickenOP = nextChickenOP;
+		BalanceTeams();
+		nextChickenOP = -1;
+	}
+	CPrintToChatAll("{yellow}Open the buy menu by pressing {white}[S]");
 	//Setup buy menu
 	canBuyAll = true;
 	CreateTimer(GetConVarFloat(cvar_custombuymenu), Timer_BuyMenu);
@@ -226,6 +234,11 @@ public Action JoinTeam(int client_index, const char[] command, int argc)
 public void ChooseOP()
 {
 	chickenOP = GetRandomPlayer();
+	BalanceTeams();
+}
+
+public void BalanceTeams()
+{
 	if (GetClientTeam(chickenOP) == CS_TEAM_CT)
 	{
 		CreateTimer(0.1,  Timer_SwitchAllT);
@@ -290,7 +303,51 @@ public Action Timer_WelcomeMessage(Handle timer, int client_index)
 
 public Action SetOP(int client_index, int args)
 {
+	if (args < 1)
+	{
+		PrintToConsole(client_index, "Usage: cs_setop <name>");
+		PrintToConsole(client_index, "Set the specified player as the Chicken OP");
+		return Plugin_Handled;
+	}
 	
+	char name[32];
+	int target = -1;
+	GetCmdArg(1, name, sizeof(name));
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientConnected(i))
+		{
+			continue;
+		}
+		char other[32];
+		GetClientName(i, other, sizeof(other));
+		if (StrEqual(name, other))
+		{
+			target = i;
+		}
+	}
+	if (target == -1)
+	{
+		PrintToConsole(client_index, "Could not find any player with the name: \"%s\"", name);
+		PrintToConsole(client_index, "Available players:");
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (!IsClientConnected(i))
+			{
+				continue;
+			}
+			char player[32];
+			GetClientName(i, player, sizeof(player));
+			PrintToConsole(client_index, "\"%s\"", player);
+		}
+		return Plugin_Handled;
+	}
+	PrintToConsole(client_index, "Setting \"%s\" as Chicken OP", name);
+	CPrintToChatAll("{green}\"%s\"{default} is the new Chicken OP! Restarting game...", name);
+	nextChickenOP = target;
+	CS_TerminateRound(0.1, CSRoundEnd_Draw, false);
+	
+	return Plugin_Handled;
 }
 
 

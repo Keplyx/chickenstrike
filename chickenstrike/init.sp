@@ -50,7 +50,7 @@ public void IntiCvars()
 	SetConVarBool(FindConVar("sv_disable_immunity_alpha"), true);
 	//Disable auto balance
 	SetConVarBool(FindConVar("mp_autoteambalance"), false);
-	
+	SetConVarBool(FindConVar("mp_autokick"), false);
 	//Disable the event if any (easter, halloween, xmas...)
 	SetConVarBool(FindConVar("sv_holiday_mode"), false);
 	
