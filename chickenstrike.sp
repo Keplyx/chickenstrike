@@ -204,10 +204,6 @@ public void OnEntityCreated(int entity_index, const char[] classname)
 	{
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
 	}
-	else if (StrEqual(classname, "hostage_entity", false))
-	{
-		
-	}
 }
 
 public Action JoinTeam(int client_index, const char[] command, int argc)
@@ -232,26 +228,35 @@ public void ChooseOP()
 	chickenOP = GetRandomPlayer();
 	if (GetClientTeam(chickenOP) == CS_TEAM_CT)
 	{
-		ResetTeams();
+		CreateTimer(0.1,  Timer_SwitchAllT);
 	}
 	else if (GetClientTeam(chickenOP) == CS_TEAM_T)
 	{
 		ChangeClientTeam(chickenOP, CS_TEAM_CT);
-		CS_RespawnPlayer(chickenOP);
-		ResetTeams();
+		int ref = EntIndexToEntRef(chickenOP);
+		CreateTimer(0.1,  Timer_Respawn, ref);
+		CreateTimer(0.2,  Timer_SwitchAllT);
 	}
 }
 
-public void ResetTeams()
+public Action Timer_SwitchAllT(Handle timer, any ref)
 {
 	for (int i = 1; i < MAXPLAYERS; i++)
 	{
 		if (IsClientCT(i) && i != chickenOP)
 		{
+			DisableChicken(i);
 			ChangeClientTeam(i, CS_TEAM_T);
-			CS_RespawnPlayer(i);
+			ref = EntIndexToEntRef(i);
+			CreateTimer(0.1,  Timer_Respawn, ref);
 		}
 	}
+}
+
+public Action Timer_Respawn(Handle timer, any ref)
+{
+	int client_index = EntRefToEntIndex(ref);
+	CS_RespawnPlayer(client_index);
 }
 
 public Action Timer_SetChicken(Handle timer, any ref) 

@@ -102,7 +102,7 @@ void CreateFakeModel(int client_index)
 	}
 }
 
-void DisableChicken(int client_index)
+public void DisableChicken(int client_index)
 {
 	//Reset player's properties, stop animations
 	SetClientSpeed(client_index, 1.0);
@@ -196,7 +196,7 @@ public void Dash(int client_index)
 public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling anim each 1s (doesn't loop)
 {
 	int client_index = GetClientOfUserId(userid);
-	if (IsValidClient(client_index) && IsValidEntity(chickens[client_index]))
+	if (IsValidClient(client_index) && IsValidEntity(chickens[client_index]) && GetClientTeam(client_index) == CS_TEAM_CT)
 	{
 		int currentFlags = GetEntityFlags(client_index);
 		if (!(currentFlags & FL_ONGROUND))
@@ -272,6 +272,8 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 		}
 		lastFlags[client_index] = currentFlags;
 	}
+	else
+		CloseHandle(animationsTimer[client_index]);
 }
 
 public Action Timer_DestroyParticles(Handle timer, int client_index)
