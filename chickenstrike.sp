@@ -88,6 +88,8 @@ public void OnPluginStart()
 	PrecacheModel(chickenModel, true);
 	PrecacheModel(eggsModel, true);
 	
+	AddCommandListener(JoinTeam, "jointeam");
+	
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_team", Event_PlayerTeam);
@@ -116,7 +118,6 @@ public void OnPluginStart()
 	PrintToServer("* Chicken Strike successfuly loaded *");
 	PrintToServer("*************************************");
 }
-
 
 public void OnConfigsExecuted()
 {
@@ -147,22 +148,6 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	SetEntData(client_index, collisionOffsets, 2, 1, true);
 	// Set money to max
 	CreateTimer(0.1, Timer_SetMoney, ref);
-}
-
-public Action Timer_SetChicken(Handle timer, any ref) 
-{
-	int client_index = EntRefToEntIndex(ref);
-	//Transformation!!
-	if (IsValidClient(client_index) && IsClientCT(client_index))
-		SetChicken(client_index);
-}
-
-public Action Timer_SetMoney(Handle timer, any ref) 
-{
-	int client_index = EntRefToEntIndex(ref);
-	//Money
-	if (IsValidClient(client_index))
-		SetEntProp(client_index, Prop_Send, "m_iAccount", 16000);
 }
 
 public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
@@ -199,6 +184,49 @@ public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast
 	CreateTimer(GetConVarFloat(cvar_custombuymenu), Timer_BuyMenu);
 }
 
+public void OnClientPostAdminCheck(int client_index)
+{
+	SDKHook(client_index, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
+	SDKHookEx(client_index, SDKHook_WeaponSwitchPost, Hook_WeaponSwitchPost);
+	//Displays the welcome message 3 sec after player's connection so he can see it
+	CreateTimer(3.0, Timer_WelcomeMessage, client_index);
+}
+
+public void OnClientDisconnect(int client_index)
+{
+	DisableChicken(client_index);
+	ResetClientItems(client_index);
+}
+
+public void OnEntityCreated(int entity_index, const char[] classname)
+{
+	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
+	{
+		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
+	}
+	else if (StrEqual(classname, "hostage_entity", false))
+	{
+		
+	}
+}
+
+public Action JoinTeam(int client_index, const char[] command, int argc)
+{ 
+	if(!IsValidClient(client_index) || argc < 1)
+		return Plugin_Handled;
+		
+	char arg[16];
+	GetCmdArg(1, arg, sizeof(arg));
+	int destTeam = StringToInt(arg);
+	
+	if ((GetClientTeam(client_index) == CS_TEAM_CT || GetClientTeam(client_index) == CS_TEAM_T) && destTeam != CS_TEAM_SPECTATOR)
+	{
+		CPrintToChat(client_index, "{lightred}Switching teams isn't allowed!");
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+
 public void ChooseOP()
 {
 	chickenOP = GetRandomPlayer();
@@ -226,31 +254,22 @@ public void ResetTeams()
 	}
 }
 
-public void OnClientPostAdminCheck(int client_index)
+public Action Timer_SetChicken(Handle timer, any ref) 
 {
-	SDKHook(client_index, SDKHook_PostThinkPost, Hook_OnPostThinkPost);
-	SDKHookEx(client_index, SDKHook_WeaponSwitchPost, Hook_WeaponSwitchPost);
-	//Displays the welcome message 3 sec after player's connection so he can see it
-	CreateTimer(3.0, Timer_WelcomeMessage, client_index);
+	int client_index = EntRefToEntIndex(ref);
+	//Transformation!!
+	if (IsValidClient(client_index) && IsClientCT(client_index))
+		SetChicken(client_index);
 }
 
-public void OnClientDisconnect(int client_index)
+public Action Timer_SetMoney(Handle timer, any ref) 
 {
-	DisableChicken(client_index);
-	ResetClientItems(client_index);
+	int client_index = EntRefToEntIndex(ref);
+	//Money
+	if (IsValidClient(client_index))
+		SetEntProp(client_index, Prop_Send, "m_iAccount", 16000);
 }
 
-public void OnEntityCreated(int entity_index, const char[] classname)
-{
-	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
-	{
-		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
-	}
-	else if (StrEqual(classname, "hostage_entity", false))
-	{
-		
-	}
-}
 
 public Action Timer_WelcomeMessage(Handle timer, int client_index)
 {
