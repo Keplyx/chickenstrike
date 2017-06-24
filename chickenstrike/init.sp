@@ -25,15 +25,20 @@ ConVar cvar_custombuymenu = null;
 
 public void CreateConVars(char[] version)
 {
-	CreateConVar("chickenwars_version", version, "Chicken Strike", FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
-	cvar_viewModel = CreateConVar("cw_viewmodel", "0", "Show view model? 0 = no, 1 = yes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	cvar_welcome_message = CreateConVar("cw_welcomemessage", "1", "Displays a welcome message to new players. 0 = no message, 1 = display message", FCVAR_NOTIFY, true, 0.0, true, 1.0);		
-	cvar_healthfactor = CreateConVar("cw_healthfactor", "50", "How much health per T the CT must have.", FCVAR_NOTIFY, true, 1.0, true, 1000.0);
-	cvar_sprintspeed = CreateConVar("cw_sprintspeed", "1", "Set chickenOP's sprint speed. 1 = human speed, 0.36 = chicken run speed, 0.12 = chicken walk speed", FCVAR_NOTIFY, true, 0.01, true, 100.0);
-	cvar_customdecoy = CreateConVar("cw_customdecoy", "1", "Set whether to enable custom decoys. 0 = disabled, 1 = enabled", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	cvar_custombuymenu = CreateConVar("cw_custombuymenu", "20", "Set how much time the custom buy menu should be displayed after player spawn. 0 = disabled, x = x seconds", FCVAR_NOTIFY, true, 0.0, true, 3600.0);
+	CreateConVar("chickenstrike_version", version, "Chicken Strike", FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
+	cvar_viewModel = CreateConVar("cs_viewmodel", "0", "Show view model? 0 = no, 1 = yes", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	cvar_welcome_message = CreateConVar("cs_welcomemessage", "1", "Displays a welcome message to new players. 0 = no message, 1 = display message", FCVAR_NOTIFY, true, 0.0, true, 1.0);		
+	cvar_healthfactor = CreateConVar("cs_healthfactor", "50", "How much health per T the CT must have.", FCVAR_NOTIFY, true, 1.0, true, 1000.0);
+	cvar_sprintspeed = CreateConVar("cs_sprintspeed", "1", "Set chickenOP's sprint speed. 1 = human speed, 0.36 = chicken run speed, 0.12 = chicken walk speed", FCVAR_NOTIFY, true, 0.01, true, 100.0);
+	cvar_customdecoy = CreateConVar("cs_customdecoy", "1", "Set whether to enable custom decoys. 0 = disabled, 1 = enabled", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	cvar_custombuymenu = CreateConVar("cs_custombuymenu", "20", "Set how much time the custom buy menu should be displayed after player spawn. 0 = disabled, x = x seconds", FCVAR_NOTIFY, true, 0.0, true, 3600.0);
 	
 	AutoExecConfig(true, "chickenstrike");
+}
+
+public void RegisterCommands()
+{
+	RegAdminCmd("cs_setop", SetOP, ADMFLAG_GENERIC, "Set a specified player to the Chicken OP");
 }
 
 public void IntiCvars()
@@ -45,13 +50,11 @@ public void IntiCvars()
 	SetConVarBool(FindConVar("sv_disable_immunity_alpha"), true);
 	//Disable auto balance
 	SetConVarBool(FindConVar("mp_autoteambalance"), false);
-	//Disable footsteps
-	SetConVarFloat(FindConVar("sv_footstep_sound_frequency"), 500.0);
 	
 	//Disable the event if any (easter, halloween, xmas...)
 	SetConVarBool(FindConVar("sv_holiday_mode"), false);
 	
 	//Set healthshot paramaters
 	SetConVarInt(FindConVar("healthshot_health"), 50);
-	SetConVarInt(FindConVar("ammo_item_limit_healthshot"), 2);
+	SetConVarInt(FindConVar("ammo_item_limit_healthshot"), 1);
 }

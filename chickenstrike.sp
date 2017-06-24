@@ -264,6 +264,12 @@ public Action Timer_WelcomeMessage(Handle timer, int client_index)
 	}
 }
 
+public Action SetOP(int client_index, int args)
+{
+	
+}
+
+
 public Action Timer_BuyMenu(Handle timer, any userid) 
 {
 	CloseBuyMenus();
