@@ -44,7 +44,7 @@
 
 /*  New in this version
 *
-*	
+*
 */
 
 //Gamemode: T must stop the CT chicken from saving hostages, eggs, or killing everyone
@@ -60,7 +60,7 @@ if (IsClientInGame( % 1) && !IsFakeClient( % 1))
 #define LoopAlivePlayers(%1) for(int %1 = 1;%1 <= MaxClients; ++%1)\
 if (IsClientInGame( % 1) && IsPlayerAlive( % 1))
 
-#define VERSION "0.1"
+#define VERSION "0.5"
 #define PLUGIN_NAME "Chicken Strike",
 
 int collisionOffsets;
@@ -69,6 +69,7 @@ bool lateload;
 
 int chickenOP;
 int nextChickenOP = -1;
+
 
 public Plugin myinfo =
 {
@@ -101,6 +102,7 @@ public void OnPluginStart()
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("hostage_follows", Event_HostageFollow);
 	HookEvent("hostage_rescued", Event_HostageRescue);
+	
 	CreateConVars(VERSION);
 	RegisterCommands();
 	
@@ -124,24 +126,6 @@ public void OnPluginStart()
 	PrintToServer("*************************************");
 }
 
-public Action NormalSoundHook(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
-{
-	
-	if(IsValidClient(entity) && StrContains(sample, "footsteps/new/") != -1)
-	{
-		if (!IsClientCT(entity))
-		{
-			float pos[3];
-			GetClientAbsOrigin(entity, pos)
-			EmitSoundToAll(sample, entity, channel, level, SND_NOFLAGS, volume, pitch, _, pos);
-		}
-		return Plugin_Handled;
-	}
-	return Plugin_Continue;
-}
-
-
-
 public void OnConfigsExecuted()
 {
 	IntiCvars();
@@ -162,13 +146,13 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	int ref = EntIndexToEntRef(client_index);
 	if (IsClientCT(client_index))
 	{
+		//Remove player collisions
+		SetEntData(client_index, collisionOffsets, 2, 1, true);
 		//Get player's viewmodel for future hiding
 		clientsViewmodels[client_index] = GetViewModelIndex(client_index);
 		// Set the player to a chicken after a little delay, so every player is on T
 		CreateTimer(0.1, Timer_SetChicken, ref);
 	}
-	//Remove player collisions
-	SetEntData(client_index, collisionOffsets, 2, 1, true);
 	// Set money to max
 	CreateTimer(0.1, Timer_SetMoney, ref);
 }
@@ -233,6 +217,10 @@ public void OnEntityCreated(int entity_index, const char[] classname)
 	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
 	{
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
+	}
+	if (StrEqual(classname, "flashbang_projectile", false) && GetConVarBool(cvar_customflash))
+	{
+		SDKHook(entity_index, SDKHook_StartTouch, Hook_GrenadeTouch);
 	}
 }
 
@@ -426,6 +414,21 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 	return Plugin_Changed;
 }
 
+public Action NormalSoundHook(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
+{
+	
+	if(IsValidClient(entity) && StrContains(sample, "footsteps/new/") != -1)
+	{
+		if (!IsClientCT(entity))
+		{
+			float pos[3];
+			GetClientAbsOrigin(entity, pos)
+			EmitSoundToAll(sample, entity, channel, level, SND_NOFLAGS, volume, pitch, _, pos);
+		}
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
 
 public void Hook_WeaponSwitchPost(int client_index, int weapon_index)
 {
@@ -473,6 +476,16 @@ public void Hook_OnGrenadeThinkPost(int entity_index)
 			ChickenDecoy(client_index, fOrigin, weapons[client_index]);
 			AcceptEntityInput(entity_index, "Kill");
 		}
+	}
+}
+
+public void Hook_GrenadeTouch(int grenade_index, int entity_index)
+{
+	if (IsValidClient(entity_index) && !IsClientCT(entity_index))
+	{
+		PrintToChatAll("Touched T!!!");
+		int client_index = GetEntPropEnt(grenade_index, Prop_Data, "m_hOwnerEntity")
+		AcceptEntityInput(grenade_index, "Kill");
 	}
 }
 
