@@ -19,14 +19,14 @@
 #include <sdktools>
 #include <sdkhooks>
 
-int eggs = 0;
-char eggsModel[] = "models/props/cs_italy/eggplant01.mdl";
+char eggModel[] = "models/chicken/festive_egg.mdl";
+char eggBoxModel[] = "models/props_junk/garbage_sixpackbox01a_fullsheet.mdl"
 
 char carryHModel[] = "models/hostage/hostage_carry.mdl";
 char armHModel[] = "models/hostage/v_hostage_arm.mdl";
 
 ArrayList hostagesList;
-int eggsList[20];
+int eggsList[20][7];
 char modelsList[20][128];
 float spawnPointsList[20][2][3];
 
@@ -47,7 +47,7 @@ public void SpawnEggs()
 				if(StrEqual(classname, "hostage_entity",false))
 				{
 					hostagesList.Push(i);
-					CreateEgg(i);
+					CreateEggs(i);
 					GetHostageModel(i);
 					GetHostageSpawn(i);
 				}
@@ -74,34 +74,65 @@ void GetHostageModel(int hostage)
 }
 
 
-void CreateEgg(int hostage)
+void CreateEggs(int hostage)
 {
-	int i = hostagesList.FindValue(hostage);
-	eggs = CreateEntityByName("prop_dynamic_override");
-	if (IsValidEntity(eggs))
+	CreateEggBox(hostage);
+	int h = hostagesList.FindValue(hostage);
+	for (int i = 1; i < sizeof(eggsList[]); i++)
 	{
-		SetEntityModel(eggs, eggsModel);
-		DispatchKeyValue(eggs, "solid", "0");
+		eggsList[h][i] = CreateEntityByName("prop_dynamic_override");
+		if (IsValidEntity(eggsList[h][i]))
+		{
+			SetEntityModel(eggsList[h][i], eggModel);
+			DispatchKeyValue(eggsList[h][i], "solid", "0");
+			SetVariantString("!activator"); AcceptEntityInput(eggsList[h][i], "SetParent", eggsList[h][0], eggsList[h][i], 0);
+			float pos[3];
+			pos[1] += 5;
+			pos[0] += 1.5;
+			if (i % 2)
+				pos[1] -= i*(1.7);
+			else
+			{
+				pos[1] -= (i - 1)*(1.7);
+				pos[0] -= 3;
+			}
+			TeleportEntity(eggsList[h][i], pos, NULL_VECTOR, NULL_VECTOR);
+			
+			//Spawn it!
+			DispatchSpawn(eggsList[h][i]);
+			ActivateEntity(eggsList[h][i]);
+		}
+	}
+	
+}
+
+void CreateEggBox(int hostage)
+{
+	int h = hostagesList.FindValue(hostage);
+	eggsList[h][0] = CreateEntityByName("prop_dynamic_override");
+	if (IsValidEntity(eggsList[h][0]))
+	{
+		SetEntityModel(eggsList[h][0], eggBoxModel);
+		DispatchKeyValue(eggsList[h][0], "solid", "0");
 		float pos[3];
 		GetEntPropVector(hostage, Prop_Send, "m_vecOrigin", pos);
 		pos[0] += 20;
-		TeleportEntity(eggs, pos, NULL_VECTOR, NULL_VECTOR);
+		pos[2] += 5;
+		TeleportEntity(eggsList[h][0], pos, NULL_VECTOR, NULL_VECTOR);
 		//Spawn it!
-		DispatchSpawn(eggs);
-		ActivateEntity(eggs);
-		eggsList[i] = eggs;
+		DispatchSpawn(eggsList[h][0]);
+		ActivateEntity(eggsList[h][0]);
 	}
 }
-
 
 public void RescueHostage(int client_index, int hostage)
 {
 	int i = hostagesList.FindValue(hostage);
 	hasHostage[client_index] = false;
-	SetVariantString(""); AcceptEntityInput(eggsList[i], "SetParent");
+	SetVariantString(""); AcceptEntityInput(eggsList[i][0], "SetParent");
 	float pos[3];
 	GetClientAbsOrigin(client_index, pos);
-	TeleportEntity(eggsList[i], pos, NULL_VECTOR, NULL_VECTOR);
+	TeleportEntity(eggsList[i][0], pos, NULL_VECTOR, NULL_VECTOR);
 }
 
 
@@ -114,12 +145,13 @@ public void GrabHostage(int client_index, int hostage)
 	
 	CreateFakeHostage(hostage);
 	//Move eggs on chicken
-	SetVariantString("!activator"); AcceptEntityInput(eggsList[i], "SetParent", client_index, eggsList[i], 0);
+	SetVariantString("!activator"); AcceptEntityInput(eggsList[i][0], "SetParent", client_index, eggsList[i][0], 0);
 	//Reset rotation and pos
 	float rot[3];
 	float pos[3];
-	pos[2] += 20;
-	TeleportEntity(eggsList[i], pos, rot, NULL_VECTOR);
+	pos[0] -= 3;
+	pos[2] += 15;
+	TeleportEntity(eggsList[i][0], pos, rot, NULL_VECTOR);
 	
 	// Hide the real hostage
 	CreateTimer(0.1, HideCarriedHostage, client_index);
@@ -157,16 +189,19 @@ public Action HideCarriedHostage(Handle timer, any ref)
 	}
 }
 
-void ResetData() // Crashing server
+void ResetData()
 {
 	for (int i = 0; i < sizeof(eggsList); i++)
 	{
-		if (IsValidEdict(eggsList[i]) && eggsList[i] != 0)
+		for (int j = 0; j < sizeof(eggsList[]); j++)
 		{
-			RemoveEdict(eggsList[i]);
+			if (IsValidEdict(eggsList[i][j]) && eggsList[i][j] != 0)
+			{
+				RemoveEdict(eggsList[i][j]);
+			}
+			eggsList[i][j] = 0;
+			modelsList[i] = "";
 		}
-		eggsList[i] = 0;
-		modelsList[i] = "";
 	}
 	for (int i = 0; i < sizeof(hasHostage); i++)
 	{

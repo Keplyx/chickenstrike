@@ -19,6 +19,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <sdktools_sound>
 #include <sdkhooks>
 #include <cstrike>
 #include <csgocolors>
@@ -87,9 +88,12 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	PrecacheModel(chickenModel, true);
-	PrecacheModel(eggsModel, true);
+	PrecacheModel(eggModel, true);
+	PrecacheModel(eggBoxModel, true);
 	
 	AddCommandListener(JoinTeam, "jointeam");
+	
+	AddNormalSoundHook(NormalSoundHook);
 	
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -97,7 +101,6 @@ public void OnPluginStart()
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("hostage_follows", Event_HostageFollow);
 	HookEvent("hostage_rescued", Event_HostageRescue);
-	
 	CreateConVars(VERSION);
 	RegisterCommands();
 	
@@ -120,6 +123,24 @@ public void OnPluginStart()
 	PrintToServer("* Chicken Strike successfuly loaded *");
 	PrintToServer("*************************************");
 }
+
+public Action NormalSoundHook(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
+{
+	
+	if(IsValidClient(entity) && StrContains(sample, "footsteps/new/") != -1)
+	{
+		if (!IsClientCT(entity))
+		{
+			float pos[3];
+			GetClientAbsOrigin(entity, pos)
+			EmitSoundToAll(sample, entity, channel, level, SND_NOFLAGS, volume, pitch, _, pos);
+		}
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+
+
 
 public void OnConfigsExecuted()
 {
@@ -198,6 +219,7 @@ public void OnClientPostAdminCheck(int client_index)
 	SDKHookEx(client_index, SDKHook_WeaponSwitchPost, Hook_WeaponSwitchPost);
 	//Displays the welcome message 3 sec after player's connection so he can see it
 	CreateTimer(3.0, Timer_WelcomeMessage, client_index);
+	SendConVarValue(client_index, FindConVar("sv_footsteps"), "0");
 }
 
 public void OnClientDisconnect(int client_index)
@@ -213,6 +235,7 @@ public void OnEntityCreated(int entity_index, const char[] classname)
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
 	}
 }
+
 
 public Action JoinTeam(int client_index, const char[] command, int argc)
 { 

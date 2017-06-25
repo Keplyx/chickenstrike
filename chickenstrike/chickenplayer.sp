@@ -272,7 +272,7 @@ public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling a
 		}
 		lastFlags[client_index] = currentFlags;
 	}
-	else
+	else if (animationsTimer[client_index] != INVALID_HANDLE)
 		CloseHandle(animationsTimer[client_index]);
 }
 

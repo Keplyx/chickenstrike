@@ -42,7 +42,7 @@ stock int GetRandomPlayer()
 	{
 		do
 		{
-			client_index = GetRandomInt(1, MAXPLAYERS);
+			client_index = GetRandomInt(1, GetClientCount(true));
 		}
 		while (!IsValidClient(client_index));
 		return client_index;
