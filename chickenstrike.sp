@@ -306,9 +306,10 @@ public Action Timer_SetChicken(Handle timer, any ref)
 public Action Timer_SetMoney(Handle timer, any ref) 
 {
 	int client_index = EntRefToEntIndex(ref);
-	//Money
-	if (IsValidClient(client_index))
-		SetEntProp(client_index, Prop_Send, "m_iAccount", 16000);
+	if (IsClientCT(client_index))
+		SetEntProp(client_index, Prop_Send, "m_iAccount", 1000); //Chicken OP can only buy nades/pistols
+	else if (IsValidClient(client_index))
+		SetEntProp(client_index, Prop_Send, "m_iAccount", 16000); //Can buy all
 }
 
 

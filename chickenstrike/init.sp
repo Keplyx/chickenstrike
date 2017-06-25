@@ -45,7 +45,8 @@ public void IntiCvars()
 {
 	//Set team names
 	SetConVarString(FindConVar("mp_teamname_1"), "Chicken OP");
-	
+	//Set default ct primary
+	SetConVarString(FindConVar("mp_ct_default_primary"), "weapon_ssg08");
 	//Enable hiding of players
 	SetConVarBool(FindConVar("sv_disable_immunity_alpha"), true);
 	//Disable auto balance
