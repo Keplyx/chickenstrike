@@ -273,7 +273,7 @@ public Action Timer_ChickenAnim(Handle timer, any ref) //Must reset falling anim
 		}
 		lastFlags[client_index] = currentFlags;
 	}
-	else if (animationsTimer[client_index] != INVALID_HANDLE)
+	else if (!IsValidClient(client_index) || (IsValidClient(client_index) && animationsTimer[client_index] != INVALID_HANDLE))
 		CloseHandle(animationsTimer[client_index]);
 }
 
