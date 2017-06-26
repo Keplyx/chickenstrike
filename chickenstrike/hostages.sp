@@ -112,7 +112,7 @@ void CreateEggBox(int hostage)
 	eggsList[h][0] = CreateEntityByName("prop_dynamic_override");
 	if (IsValidEntity(eggsList[h][0]))
 	{
-		SetEntityModel(eggsList[h][0], eggBoxModel);
+		SetEntityModel(eggsList[h][0], eggModel);
 		DispatchKeyValue(eggsList[h][0], "solid", "0");
 		float pos[3];
 		GetEntPropVector(hostage, Prop_Send, "m_vecOrigin", pos);
