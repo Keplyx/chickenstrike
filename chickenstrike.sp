@@ -91,7 +91,12 @@ public void OnPluginStart()
 {
 	PrecacheModel(chickenModel, true);
 	PrecacheModel(eggModel, true);
-	PrecacheModel("models/props_junk/garbage_sixpackbox01a_fullsheet.mdl", true);
+	do
+	{
+		PrintToServer("Precaching '%s'", eggBoxModel);
+		PrecacheModel(eggBoxModel, true);
+	}
+	while (!IsModelPrecached(eggBoxModel));
 	
 	AddCommandListener(JoinTeam, "jointeam");
 	AddCommandListener(BuyMenu, "buy");
