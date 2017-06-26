@@ -272,7 +272,7 @@ public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset fal
 		}
 		lastFlags[client_index] = currentFlags;
 	}
-	else if (IsValidClient(client_index) && animationsTimer[client_index] != null)
+	else if (IsValidClient(client_index) && animationsTimer[client_index] != INVALID_HANDLE)
 		CloseHandle(animationsTimer[client_index]);
 }
 
