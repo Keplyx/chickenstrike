@@ -47,18 +47,7 @@
 *
 */
 
-//Gamemode: T must stop the CT chicken from saving eggs, or killing everyone
-
-#define LoopClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++)
-
-#define LoopIngameClients(%1) for(int %1 = 1; %1 <= MaxClients; ++%1)\
-if (IsClientInGame( % 1))
-
-#define LoopIngamePlayers(%1) for(int %1 = 1; %1 <= MaxClients; ++%1)\
-if (IsClientInGame( % 1) && !IsFakeClient( % 1))
-
-#define LoopAlivePlayers(%1) for(int %1 = 1;%1 <= MaxClients; ++%1)\
-if (IsClientInGame( % 1) && IsPlayerAlive( % 1))
+//Gamemode: T must stop the CT chicken from saving eggs
 
 #define VERSION "0.5"
 #define PLUGIN_NAME "Chicken Strike",
@@ -107,10 +96,6 @@ public void OnPluginStart()
 	RegisterCommands();
 	
 	collisionOffsets = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
-	
-	//Throws Error
-	//LoopIngameClients(i)
-	//	OnClientPostAdminCheck(i);
 	
 	for(int i = 1; i <= MaxClients; i++)
 	{
@@ -411,6 +396,23 @@ public Action SetOP(int client_index, int args)
 	nextChickenOP = target;
 	CS_TerminateRound(0.1, CSRoundEnd_Draw, false);
 	
+	return Plugin_Handled;
+}
+
+public Action DisplayCredits(int client_index, int args)
+{
+	PrintToConsole(client_index, "----- CHICKEN STRIKE CREDITS -----");
+	PrintToConsole(client_index, "");
+	PrintToConsole(client_index, ">>> PROGRAMMING");
+	PrintToConsole(client_index, "Keplyx | http://steamcommunity.com/id/Keplyx/");
+	PrintToConsole(client_index, ">>> IDEA");
+	PrintToConsole(client_index, "Mori | http://steamcommunity.com/id/morianimation/");
+	PrintToConsole(client_index, ">>> Original ANIMATION");
+	PrintToConsole(client_index, "Mori Animations | https://www.youtube.com/watch?v=8kOOlC058ls");
+	PrintToConsole(client_index, "");
+	PrintToConsole(client_index, "Thanks for using this plugin! If you want to give some feedback, write on Keplyx' profile!");
+	PrintToConsole(client_index, "");
+	PrintToConsole(client_index, "----- ---------- ---------- -----");
 	return Plugin_Handled;
 }
 

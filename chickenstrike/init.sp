@@ -39,6 +39,7 @@ public void CreateConVars(char[] version)
 public void RegisterCommands()
 {
 	RegAdminCmd("cs_setop", SetOP, ADMFLAG_GENERIC, "Set a specified player to the Chicken OP");
+	RegConsoleCmd("cs_credits", DisplayCredits, "Display Chicken Strike credits")
 }
 
 public void IntiCvars()
