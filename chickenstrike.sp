@@ -235,17 +235,16 @@ public void OnClientDisconnect(int client_index)
 
 public void OnEntityCreated(int entity_index, const char[] classname)
 {
-	int ref = EntIndexToEntRef(entity_index);
 	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
 	{
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
 	}
 	if (StrEqual(classname, "flashbang_projectile", false) && GetConVarBool(cvar_customflash))
 	{
+		int ref = EntIndexToEntRef(entity_index);
 		CreateTimer(0.1, Timer_DefuseGrenade, ref);
 		CreateTimer(0.0, Timer_SetEggGrenade, ref);
 		SDKHook(entity_index, SDKHook_StartTouch, Hook_GrenadeTouch);
-		
 	}
 }
 
