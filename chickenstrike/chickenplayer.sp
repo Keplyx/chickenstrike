@@ -111,10 +111,6 @@ public void DisableChicken(int client_index)
 		SetEntityRenderMode(client_index, RENDER_NORMAL);
 		ChickenDeath(client_index);
 	}
-
-	if (animationsTimer[client_index] != INVALID_HANDLE)
-		CloseHandle(animationsTimer[client_index]);
-	
 	
 	lastFlags[client_index] = 0;
 	flyCounter[client_index] = 0;
