@@ -47,7 +47,7 @@
 *
 */
 
-//Gamemode: T must stop the CT chicken from saving hostages, eggs, or killing everyone
+//Gamemode: T must stop the CT chicken from saving eggs, or killing everyone
 
 #define LoopClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++)
 
@@ -70,6 +70,7 @@ bool lateload;
 int chickenOP;
 int nextChickenOP = -1;
 
+bool inverted[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -234,16 +235,19 @@ public void OnClientDisconnect(int client_index)
 
 public void OnEntityCreated(int entity_index, const char[] classname)
 {
+	int ref = EntIndexToEntRef(entity_index);
 	if (StrEqual(classname, "decoy_projectile", false) && GetConVarBool(cvar_customdecoy))
 	{
 		SDKHook(entity_index, SDKHook_ThinkPost, Hook_OnGrenadeThinkPost);
 	}
 	if (StrEqual(classname, "flashbang_projectile", false) && GetConVarBool(cvar_customflash))
 	{
+		CreateTimer(0.1, Timer_DefuseGrenade, ref);
+		CreateTimer(0.0, Timer_SetEggGrenade, ref);
 		SDKHook(entity_index, SDKHook_StartTouch, Hook_GrenadeTouch);
+		
 	}
 }
-
 
 public Action JoinTeam(int client_index, const char[] command, int argc)
 { 
@@ -346,6 +350,19 @@ public Action Timer_WelcomeMessage(Handle timer, int client_index)
 	}
 }
 
+public Action Timer_DefuseGrenade(Handle timer, any ref)
+{
+	int ent = EntRefToEntIndex(ref);
+	if (ent != INVALID_ENT_REFERENCE)
+		SetEntProp(ent, Prop_Data, "m_nNextThinkTick", -1);
+}
+
+public Action Timer_SetEggGrenade(Handle timer, any ref)
+{
+	int entity_index = EntRefToEntIndex(ref);
+	SetEntityModel(entity_index, weaponEggModel);
+}
+
 public Action SetOP(int client_index, int args)
 {
 	if (args < 1)
@@ -431,6 +448,12 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 			return Plugin_Continue;
 		}
 	}
+	
+	if (inverted[client_index])
+	{
+		vel[0] = -vel[0];
+		vel[1] = -vel[1];
+	}
 	return Plugin_Changed;
 }
 
@@ -480,8 +503,6 @@ public void Hook_OnPostThinkPost(int entity_index)
 
 public void Hook_OnGrenadeThinkPost(int entity_index)
 {
-	//Manage the grenades
-	//When it stops moving, kill the entity and replace it by chickens!
 	float fVelocity[3];
 	GetEntPropVector(entity_index, Prop_Send, "m_vecVelocity", fVelocity);
 	if (fVelocity[0] == 0.0 && fVelocity[1] == 0.0 && fVelocity[2] == 0.0)
@@ -489,7 +510,6 @@ public void Hook_OnGrenadeThinkPost(int entity_index)
 		int client_index = GetEntPropEnt(entity_index, Prop_Data, "m_hOwnerEntity")
 		char buffer[64];
 		GetEntityClassname(entity_index, buffer, sizeof(buffer));
-		
 		if (StrEqual(buffer, "decoy_projectile") && IsClientCT(client_index)){
 			float fOrigin[3];
 			GetEntPropVector(entity_index, Prop_Send, "m_vecOrigin", fOrigin);
@@ -503,10 +523,21 @@ public void Hook_GrenadeTouch(int grenade_index, int entity_index)
 {
 	if (IsValidClient(entity_index) && !IsClientCT(entity_index))
 	{
-		PrintToChatAll("Touched T!!!");
-		int client_index = GetEntPropEnt(grenade_index, Prop_Data, "m_hOwnerEntity")
+		int activeWeapon = GetEntPropEnt(entity_index, Prop_Send, "m_hActiveWeapon");
+		char classname[64];
+		GetEntityClassname(activeWeapon, classname, sizeof(classname));
+		if (!StrEqual(classname, "weapon_knife", false))
+			CS_DropWeapon(entity_index, activeWeapon, true,  false);
+		
+		inverted[entity_index] = true;
+		CreateTimer(2.5, Timer_InvertPlayer, entity_index);
 		AcceptEntityInput(grenade_index, "Kill");
 	}
+}
+
+public Action Timer_InvertPlayer(Handle timer, int client_index)
+{
+	inverted[client_index] = false;
 }
 
 public Action Hook_WeaponReloadPost(int weapon) //Bug: gets called if ammo is full and player pressing reload key

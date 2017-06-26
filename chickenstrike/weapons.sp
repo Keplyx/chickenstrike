@@ -22,6 +22,8 @@ int weapons[MAXPLAYERS];
 int clientsViewmodels[MAXPLAYERS + 1];
 char currentWeaponName[MAXPLAYERS + 1][32];
 
+char weaponEggModel[] = "models/chicken/festive_egg.mdl";
+
 public void DisplaySwitching(int client_index)
 {
 	//Tell visible + weapon switched to
@@ -55,6 +57,11 @@ public void SetModel(int client_index, int weapon_index, char[] classname)
 {
 	if (StrEqual(classname, "weapon_smokegrenade", false) || StrEqual(classname, "weapon_decoy", false) || StrEqual(classname, "weapon_tagrenade", false) || StrEqual(classname, "weapon_molotov", false) || StrEqual(classname, "weapon_incgrenade", false) || StrEqual(classname, "weapon_hegrenade", false))
 	{
+		SetWeaponPos(client_index, 1);
+	}
+	else if (StrEqual(classname, "weapon_flashbang", false))
+	{
+		SetEntityModel(weapon_index, weaponEggModel);
 		SetWeaponPos(client_index, 1);
 	}
 	else if (StrEqual(classname, "weapon_healthshot", false))
