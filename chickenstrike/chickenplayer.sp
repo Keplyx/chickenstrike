@@ -112,7 +112,10 @@ public void DisableChicken(int client_index)
 		ChickenDeath(client_index);
 	}
 	if (animationsTimer[client_index] != INVALID_HANDLE)
-		CloseHandle(animationsTimer[client_index]);
+	{
+		KillTimer(animationsTimer[client_index]);
+		animationsTimer[client_index] = INVALID_HANDLE;
+	}
 	
 	lastFlags[client_index] = 0;
 	flyCounter[client_index] = 0;
