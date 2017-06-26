@@ -154,7 +154,8 @@ void ChickenDeath(int client_index) //Fake a chicken's death
 
 public void SetClientSpeed(int client_index, float speed)
 {
-	SetEntPropFloat(client_index, Prop_Send, "m_flLaggedMovementValue", speed); //reduce player's speed (including falling speed)
+	if (IsValidClient(client_index))
+		SetEntPropFloat(client_index, Prop_Send, "m_flLaggedMovementValue", speed); //reduce player's speed (including falling speed)
 }
 
 public void SlowPlayerFall(int client_index)
