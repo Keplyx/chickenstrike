@@ -111,6 +111,8 @@ public void DisableChicken(int client_index)
 		SetEntityRenderMode(client_index, RENDER_NORMAL);
 		ChickenDeath(client_index);
 	}
+	if (animationsTimer[client_index] != INVALID_HANDLE)
+		CloseHandle(animationsTimer[client_index]);
 	
 	lastFlags[client_index] = 0;
 	flyCounter[client_index] = 0;
@@ -195,7 +197,6 @@ public void Dash(int client_index)
 
 public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset falling anim each 1s (doesn't loop)
 {
-	PrintToServer("%d", client_index);
 	if (IsClientCT(client_index) && IsValidEntity(chickens[client_index]))
 	{
 		int currentFlags = GetEntityFlags(client_index);
@@ -272,8 +273,6 @@ public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset fal
 		}
 		lastFlags[client_index] = currentFlags;
 	}
-	else if (IsValidClient(client_index) && animationsTimer[client_index] != INVALID_HANDLE)
-		CloseHandle(animationsTimer[client_index]);
 }
 
 public Action Timer_DestroyParticles(Handle timer, int client_index)
