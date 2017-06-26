@@ -93,6 +93,9 @@ public void OnPluginStart()
 	PrecacheModel(eggBoxModel, true);
 	
 	AddCommandListener(JoinTeam, "jointeam");
+	AddCommandListener(BuyMenu, "buy");
+	AddCommandListener(BuyMenu, "rebuy");
+	AddCommandListener(BuyMenu, "autobuy");
 	
 	AddNormalSoundHook(NormalSoundHook);
 	
@@ -259,6 +262,19 @@ public Action JoinTeam(int client_index, const char[] command, int argc)
 	return Plugin_Continue;
 }
 
+public Action BuyMenu(int client_index, const char[] command, int argc)
+{ 
+	if(!IsValidClient(client_index))
+		return Plugin_Handled;
+		
+	if (IsClientCT(client_index))
+	{
+		CPrintToChat(client_index, "{lightred}You cannot buy weapons as the Chicken OP!");
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
+
 public void ChooseOP()
 {
 	chickenOP = GetRandomPlayer();
@@ -312,7 +328,7 @@ public Action Timer_SetMoney(Handle timer, any ref)
 {
 	int client_index = EntRefToEntIndex(ref);
 	if (IsClientCT(client_index))
-		SetEntProp(client_index, Prop_Send, "m_iAccount", 1000); //Chicken OP can only buy nades/pistols
+		SetEntProp(client_index, Prop_Send, "m_iAccount", 0); //Chicken OP cannot buy
 	else if (IsValidClient(client_index))
 		SetEntProp(client_index, Prop_Send, "m_iAccount", 16000); //Can buy all
 }
