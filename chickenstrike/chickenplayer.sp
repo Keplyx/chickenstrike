@@ -98,8 +98,7 @@ void CreateFakeModel(int client_index)
 		//Sets the base animation (to spawn with)
 		SetVariantString(chickenSec[2]); AcceptEntityInput(chickens[client_index], "SetAnimation");
 		//Plays the animation
-		int ref = EntIndexToEntRef(client_index)
-		animationsTimer[client_index] = CreateTimer(0.1, Timer_ChickenAnim, ref, TIMER_REPEAT);
+		animationsTimer[client_index] = CreateTimer(0.1, Timer_ChickenAnim, client_index, TIMER_REPEAT);
 	}
 }
 
@@ -112,6 +111,8 @@ public void DisableChicken(int client_index)
 		SetEntityRenderMode(client_index, RENDER_NORMAL);
 		ChickenDeath(client_index);
 	}
+	if (animationsTimer[client_index] != null)
+		CloseHandle(animationsTimer[client_index]);
 	
 	lastFlags[client_index] = 0;
 	flyCounter[client_index] = 0;
@@ -194,9 +195,8 @@ public void Dash(int client_index)
 	TeleportEntity(client_index, NULL_VECTOR, NULL_VECTOR, vel);
 }
 
-public Action Timer_ChickenAnim(Handle timer, any ref) //Must reset falling anim each 1s (doesn't loop)
+public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset falling anim each 1s (doesn't loop)
 {
-	int client_index = EntRefToEntIndex(ref);
 	if (IsClientCT(client_index) && IsValidEntity(chickens[client_index]))
 	{
 		int currentFlags = GetEntityFlags(client_index);
@@ -273,7 +273,7 @@ public Action Timer_ChickenAnim(Handle timer, any ref) //Must reset falling anim
 		}
 		lastFlags[client_index] = currentFlags;
 	}
-	else if (!IsValidClient(client_index) || (IsValidClient(client_index) && animationsTimer[client_index] != INVALID_HANDLE))
+	else if (IsValidClient(client_index) && animationsTimer[client_index] != null)
 		CloseHandle(animationsTimer[client_index]);
 }
 
