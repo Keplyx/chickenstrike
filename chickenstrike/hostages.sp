@@ -20,7 +20,7 @@
 #include <sdkhooks>
 
 char eggModel[] = "models/chicken/festive_egg.mdl";
-char eggBoxModel[] = "models/props_junk/garbage_sixpackbox01a_fullsheet.mdl"
+char eggBoxModel[] = "models/props_junk/garbage_sixpackbox01a_fullsheet.mdl";
 
 char carryHModel[] = "models/hostage/hostage_carry.mdl";
 char armHModel[] = "models/hostage/v_hostage_arm.mdl";

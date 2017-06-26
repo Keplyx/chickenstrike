@@ -243,7 +243,7 @@ public void OnEntityCreated(int entity_index, const char[] classname)
 	{
 		int ref = EntIndexToEntRef(entity_index);
 		CreateTimer(0.1, Timer_DefuseGrenade, ref);
-		CreateTimer(0.0, Timer_SetEggGrenade, ref);
+		CreateTimer(0.0, Timer_SetEggGrenade, entity_index);
 		SDKHook(entity_index, SDKHook_StartTouch, Hook_GrenadeTouch);
 	}
 }
@@ -356,10 +356,10 @@ public Action Timer_DefuseGrenade(Handle timer, any ref)
 		SetEntProp(ent, Prop_Data, "m_nNextThinkTick", -1);
 }
 
-public Action Timer_SetEggGrenade(Handle timer, any ref)
+public Action Timer_SetEggGrenade(Handle timer, int entity_index)
 {
-	int entity_index = EntRefToEntIndex(ref);
-	SetEntityModel(entity_index, weaponEggModel);
+	if (IsValidEntity(entity_index))
+		SetEntityModel(entity_index, weaponEggModel);
 }
 
 public Action SetOP(int client_index, int args)
