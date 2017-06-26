@@ -105,14 +105,16 @@ void CreateFakeModel(int client_index)
 public void DisableChicken(int client_index)
 {
 	//Reset player's properties, stop animations
-	SetClientSpeed(client_index, 1.0);
 	if (IsValidClient(client_index))
-		SetEntityRenderMode(client_index, RENDER_NORMAL);
-	if (animationsTimer[client_index] != INVALID_HANDLE)
 	{
-		CloseHandle(animationsTimer[client_index]);
-		animationsTimer[client_index] = INVALID_HANDLE;
+		SetClientSpeed(client_index, 1.0);
+		SetEntityRenderMode(client_index, RENDER_NORMAL);
+		ChickenDeath(client_index);
 	}
+
+	if (animationsTimer[client_index] != INVALID_HANDLE)
+		CloseHandle(animationsTimer[client_index]);
+	
 	
 	lastFlags[client_index] = 0;
 	flyCounter[client_index] = 0;
@@ -121,7 +123,7 @@ public void DisableChicken(int client_index)
 	wasWalking[client_index] = false;
 	DisableFakeModel(client_index);
 	DeleteFakeWeapon(client_index);
-	ChickenDeath(client_index);
+	
 }
 
 void DisableFakeModel(int client_index)
@@ -198,7 +200,7 @@ public void Dash(int client_index)
 public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling anim each 1s (doesn't loop)
 {
 	int client_index = GetClientOfUserId(userid);
-	if (IsClientCT(client_index) && IsValidEntity(chickens[client_index]) && GetClientTeam(client_index) == CS_TEAM_CT)
+	if (IsClientCT(client_index) && IsValidEntity(chickens[client_index]))
 	{
 		int currentFlags = GetEntityFlags(client_index);
 		if (!(currentFlags & FL_ONGROUND))
