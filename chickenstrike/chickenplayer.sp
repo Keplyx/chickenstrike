@@ -106,7 +106,8 @@ public void DisableChicken(int client_index)
 {
 	//Reset player's properties, stop animations
 	SetClientSpeed(client_index, 1.0);
-	SetEntityRenderMode(client_index, RENDER_NORMAL);
+	if (IsValidClient(client_index))
+		SetEntityRenderMode(client_index, RENDER_NORMAL);
 	if (animationsTimer[client_index] != INVALID_HANDLE)
 	{
 		CloseHandle(animationsTimer[client_index]);
