@@ -22,7 +22,6 @@ ConVar cvar_healthfactor = null;
 ConVar cvar_sprintspeed = null;
 ConVar cvar_customdecoy = null;
 ConVar cvar_customflash = null;
-ConVar cvar_custombuymenu = null;
 
 public void CreateConVars(char[] version)
 {
@@ -33,7 +32,6 @@ public void CreateConVars(char[] version)
 	cvar_sprintspeed = CreateConVar("cs_sprintspeed", "1", "Set chickenOP's sprint speed. 1 = human speed, 0.36 = chicken run speed, 0.12 = chicken walk speed", FCVAR_NOTIFY, true, 0.01, true, 100.0);
 	cvar_customdecoy = CreateConVar("cs_customdecoy", "1", "Set whether to enable custom decoys for the Chicken OP. 0 = disabled, 1 = enabled", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	cvar_customflash = CreateConVar("cs_customflash", "1", "Set whether to enable custom flashes for the Chicken OP. 0 = disabled, 1 = enabled", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	cvar_custombuymenu = CreateConVar("cs_custombuymenu", "20", "Set how much time the custom buy menu should be displayed after player spawn. 0 = disabled, x = x seconds", FCVAR_NOTIFY, true, 0.0, true, 3600.0);
 	
 	AutoExecConfig(true, "chickenstrike");
 }
@@ -47,17 +45,24 @@ public void IntiCvars()
 {
 	//Set team names
 	SetConVarString(FindConVar("mp_teamname_1"), "Chicken OP");
-	//Set default ct primary
-	SetConVarString(FindConVar("mp_ct_default_primary"), "weapon_ssg08");
 	//Enable hiding of players
 	SetConVarBool(FindConVar("sv_disable_immunity_alpha"), true);
 	//Disable auto balance
 	SetConVarBool(FindConVar("mp_autoteambalance"), false);
 	SetConVarBool(FindConVar("mp_autokick"), false);
+	
 	//Disable the event if any (easter, halloween, xmas...)
 	SetConVarBool(FindConVar("sv_holiday_mode"), false);
 	
 	//Set healthshot paramaters
 	SetConVarInt(FindConVar("healthshot_health"), 50);
 	SetConVarInt(FindConVar("ammo_item_limit_healthshot"), 1);
+	SetConVarInt(FindConVar("mp_death_drop_grenade"), 0);
+	SetConVarInt(FindConVar("mp_death_drop_defuser"), 0);
+	
+	 
+	SetConVarInt(FindConVar("mp_playercashawards"), 0);
+	SetConVarInt(FindConVar("mp_teamcashawards"), 0);
+	
+	
 }

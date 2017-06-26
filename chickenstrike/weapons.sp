@@ -167,3 +167,22 @@ public void SetViewModel(int client_index, bool enabled)
 		EntEffects |= 32; // Set to Nodraw
 	SetEntProp(clientsViewmodels[client_index], Prop_Send, "m_fEffects", EntEffects);
 }
+
+
+public void RemovePlayerWeapons(int client_index)
+{
+	int weaponIndex;
+	//Cycles through every slot and deletes the weapons
+	for (int i = 0; i < 5; i++) {
+		if (GetPlayerWeaponSlot(client_index, i) != -1) {
+			weaponIndex = GetPlayerWeaponSlot(client_index, i);
+			char classname[64];
+			GetEntityClassname(weaponIndex, classname, sizeof(classname));
+			if (!StrEqual(classname, "weapon_knife", false))
+			{
+				RemovePlayerItem(client_index, weaponIndex);
+				RemoveEdict(weaponIndex);
+			}
+		}
+	}
+}

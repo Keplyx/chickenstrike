@@ -153,8 +153,30 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 		// Set the player to a chicken after a little delay, so every player is on T
 		CreateTimer(0.1, Timer_SetChicken, ref);
 	}
+	
+	GiveStartGuns(client_index)
+		
 	// Set money to max
 	CreateTimer(0.1, Timer_SetMoney, ref);
+}
+
+public void GiveStartGuns(int client_index)
+{
+	// Remove guns then give them back
+	RemovePlayerWeapons(client_index);
+	if (IsClientCT(client_index))
+	{
+		GivePlayerItem(client_index, "weapon_ssg08");
+		GivePlayerItem(client_index, "weapon_deagle");
+		GivePlayerItem(client_index, "weapon_flashbang");
+		GivePlayerItem(client_index, "weapon_decoy");
+	}
+	else
+	{
+		GivePlayerItem(client_index, "weapon_glock");
+		GivePlayerItem(client_index, "weapon_tagrenade");
+		GivePlayerItem(client_index, "weapon_healthshot");
+	}
 }
 
 public void Event_PlayerTeam(Handle event, const char[] name, bool dontBroadcast)
@@ -179,7 +201,6 @@ public void Event_HostageRescue(Event event, const char[] name, bool dontBroadca
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
-	ResetAllItems();
 	SpawnEggs();
 	
 	// Prevent the game from entering a restart game loop if only 2 players
@@ -191,10 +212,6 @@ public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast
 		BalanceTeams();
 		nextChickenOP = -1;
 	}
-	CPrintToChatAll("{yellow}Open the buy menu by pressing {white}[S]");
-	//Setup buy menu
-	canBuyAll = true;
-	CreateTimer(GetConVarFloat(cvar_custombuymenu), Timer_BuyMenu);
 }
 
 public void OnClientPostAdminCheck(int client_index)
@@ -210,7 +227,6 @@ public void OnClientPostAdminCheck(int client_index)
 public void OnClientDisconnect(int client_index)
 {
 	DisableChicken(client_index);
-	ResetClientItems(client_index);
 }
 
 public void OnEntityCreated(int entity_index, const char[] classname)
@@ -363,12 +379,6 @@ public Action SetOP(int client_index, int args)
 	return Plugin_Handled;
 }
 
-
-public Action Timer_BuyMenu(Handle timer, any userid) 
-{
-	CloseBuyMenus();
-}
-
 public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
 	if (!IsPlayerAlive(client_index))
@@ -403,13 +413,6 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 		{
 			buttons &= ~IN_DUCK;
 			return Plugin_Continue;
-		}
-	}
-	else
-	{
-		if ((buttons & IN_BACK) && canBuyAll)
-		{
-			Menu_Buy(client_index, 0);
 		}
 	}
 	return Plugin_Changed;
