@@ -89,15 +89,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	PrecacheModel(chickenModel, true);
-	PrecacheModel(eggModel, true);
-	do
-	{
-		PrintToServer("Precaching '%s'", eggBoxModel);
-		PrecacheModel(eggBoxModel, true);
-	}
-	while (!IsModelPrecached(eggBoxModel));
-	
 	AddCommandListener(JoinTeam, "jointeam");
 	AddCommandListener(BuyMenu, "buy");
 	AddCommandListener(BuyMenu, "rebuy");
@@ -133,6 +124,13 @@ public void OnPluginStart()
 	PrintToServer("*************************************");
 	PrintToServer("* Chicken Strike successfuly loaded *");
 	PrintToServer("*************************************");
+}
+
+public void OnMapStart()
+{
+	PrecacheModel(chickenModel, true);
+	PrecacheModel(eggModel, true);
+	PrecacheModel(eggBoxModel, true);
 }
 
 public void OnConfigsExecuted()
