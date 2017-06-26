@@ -196,7 +196,7 @@ public void Dash(int client_index)
 public Action Timer_ChickenAnim(Handle timer, int userid) //Must reset falling anim each 1s (doesn't loop)
 {
 	int client_index = GetClientOfUserId(userid);
-	if (IsValidClient(client_index) && IsValidEntity(chickens[client_index]) && GetClientTeam(client_index) == CS_TEAM_CT)
+	if (IsClientCT(client_index) && IsValidEntity(chickens[client_index]) && GetClientTeam(client_index) == CS_TEAM_CT)
 	{
 		int currentFlags = GetEntityFlags(client_index);
 		if (!(currentFlags & FL_ONGROUND))
