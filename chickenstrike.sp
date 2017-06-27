@@ -166,7 +166,6 @@ public void GiveStartGuns(int client_index)
 	else
 	{
 		GivePlayerItem(client_index, "weapon_glock");
-		GivePlayerItem(client_index, "weapon_tagrenade");
 		GivePlayerItem(client_index, "weapon_healthshot");
 	}
 }
@@ -427,6 +426,15 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 		isMoving[client_index] = (vel[0] > 0.0 || vel[0] < 0.0 || vel[1] > 0.0 || vel[1] < 0.0);
 		isWalking[client_index] = (buttons & IN_SPEED) && !(buttons & IN_DUCK) && isMoving[client_index];
 		isSprinting[client_index] = (buttons & IN_DUCK) && isMoving[client_index];
+		
+		if (buttons & IN_RELOAD)
+		{
+			int activeWeapon = GetEntPropEnt(client_index, Prop_Send, "m_hActiveWeapon");
+			char classname[64];
+			GetEntityClassname(activeWeapon, classname, sizeof(classname));
+			if (StrEqual(classname, "weapon_knife", false))
+				Menu_Taunt(client_index, 0);
+		}
 		
 		if (!hasHostage[client_index])
 		{
