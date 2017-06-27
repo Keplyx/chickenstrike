@@ -52,8 +52,6 @@
 #define VERSION "0.5"
 #define PLUGIN_NAME "Chicken Strike",
 
-int collisionOffsets;
-
 bool lateload;
 
 int chickenOP;
@@ -94,8 +92,6 @@ public void OnPluginStart()
 	
 	CreateConVars(VERSION);
 	RegisterCommands();
-	
-	collisionOffsets = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
 	for(int i = 1; i <= MaxClients; i++)
 	{
@@ -138,8 +134,6 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	int ref = EntIndexToEntRef(client_index);
 	if (IsClientCT(client_index))
 	{
-		//Remove player collisions
-		SetEntData(client_index, collisionOffsets, 2, 1, true);
 		//Get player's viewmodel for future hiding
 		clientsViewmodels[client_index] = GetViewModelIndex(client_index);
 		// Set the player to a chicken after a little delay, so every player is on T
