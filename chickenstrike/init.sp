@@ -40,6 +40,9 @@ public void RegisterCommands()
 {
 	RegAdminCmd("cs_setop", SetOP, ADMFLAG_GENERIC, "Set a specified player to the Chicken OP");
 	RegConsoleCmd("cs_credits", DisplayCredits, "Display Chicken Strike credits")
+	RegConsoleCmd("say !cs_credits", DisplayCredits, "Display Chicken Strike credits")
+	RegConsoleCmd("cs_help", DisplayHelp, "Display Chicken Strike help")
+	RegConsoleCmd("say !cs_help", DisplayHelp, "Display Chicken Strike help")
 }
 
 public void IntiCvars()

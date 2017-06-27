@@ -141,7 +141,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	}
 	
 	GiveStartGuns(client_index)
-		
+	
 	// Set money to max
 	CreateTimer(0.1, Timer_SetMoney, ref);
 }
@@ -325,7 +325,9 @@ public Action Timer_WelcomeMessage(Handle timer, int client_index)
 		//Welcome message (white text in red box)
 		CPrintToChat(client_index, "{darkred}********************************");
 		CPrintToChat(client_index, "{darkred}* {default}Welcome to Chicken Strike");
-		CPrintToChat(client_index, "{darkred}*            {default}Made by Keplyx");
+		CPrintToChat(client_index, "{darkred}*            {default}Made by {lime}Keplyx");
+		CPrintToChat(client_index, "{darkred}*{default} For more information on the plugin,");
+		CPrintToChat(client_index, "{darkred}*{default} use {lime}!cs_help{default} and {lime}!cs_credits{default} in chat");
 		CPrintToChat(client_index, "{darkred}********************************");
 	}
 }
@@ -406,8 +408,43 @@ public Action DisplayCredits(int client_index, int args)
 	PrintToConsole(client_index, "Thanks for using this plugin! If you want to give some feedback, write on Keplyx' profile!");
 	PrintToConsole(client_index, "");
 	PrintToConsole(client_index, "----- ---------- ---------- -----");
+	
+	CPrintToChat(client_index, "{green}----- CHICKEN STRIKE CREDITS -----");
+	CPrintToChat(client_index, "");
+	CPrintToChat(client_index, "{lime}>>> PROGRAMMING");
+	CPrintToChat(client_index, "Keplyx | http://steamcommunity.com/id/Keplyx/");
+	CPrintToChat(client_index, "{lime}>>> IDEA");
+	CPrintToChat(client_index, "Mori | http://steamcommunity.com/id/morianimation/");
+	CPrintToChat(client_index, "{lime}>>> Original ANIMATION");
+	CPrintToChat(client_index, "Mori Animations | https://www.youtube.com/watch?v=8kOOlC058ls");
+	CPrintToChat(client_index, "");
+	CPrintToChat(client_index, "Thanks for using this plugin! If you want to give some feedback, write on Keplyx' profile!");
+	CPrintToChat(client_index, "");
+	CPrintToChat(client_index, "{green}----- ---------- ---------- -----");
+	
 	return Plugin_Handled;
 }
+
+public Action DisplayHelp(int client_index, int args)
+{
+	PrintToConsole(client_index, "----- CHICKEN STRIKE HELP -----");
+	PrintToConsole(client_index, "Help is available online:");
+	PrintToConsole(client_index, "https://github.com/Keplyx/chickenstrike/wiki/Chicken-Strike-FAQ");
+	PrintToConsole(client_index, "");
+	PrintToConsole(client_index, "If you still have questions, please contact Keplyx: http://steamcommunity.com/id/Keplyx/");
+	PrintToConsole(client_index, "----- ---------- ---------- -----");
+	
+	CPrintToChat(client_index, "{green}----- CHICKEN STRIKE HELP -----");
+	CPrintToChat(client_index, "Help is available online:");
+	CPrintToChat(client_index, "{lime}https://github.com/Keplyx/chickenstrike/wiki/Chicken-Strike-FAQ");
+	CPrintToChat(client_index, "(Open the console to copy-paste it in your browser)");
+	CPrintToChat(client_index, "");
+	CPrintToChat(client_index, "If you still have questions, please contact Keplyx: http://steamcommunity.com/id/Keplyx/");
+	CPrintToChat(client_index, "{green}----- ---------- ---------- -----");
+	return Plugin_Handled;
+}
+
+
 
 public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
