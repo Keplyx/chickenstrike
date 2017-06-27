@@ -455,8 +455,8 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 	{
 		//Change player's animations based on key pressed
 		isMoving[client_index] = (vel[0] > 0.0 || vel[0] < 0.0 || vel[1] > 0.0 || vel[1] < 0.0);
-		isWalking[client_index] = (buttons & IN_SPEED) && !(buttons & IN_DUCK) && isMoving[client_index];
-		isSprinting[client_index] = (buttons & IN_DUCK) && isMoving[client_index];
+		isWalking[client_index] = (buttons & IN_DUCK) && !(buttons & IN_SPEED) && isMoving[client_index];
+		isSprinting[client_index] = !(buttons & IN_DUCK) &&!(buttons & IN_SPEED) && isMoving[client_index];
 		
 		if (buttons & IN_RELOAD)
 		{
@@ -474,12 +474,12 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 				SlowPlayerFall(client_index);
 			}
 			// Super jump
-			if ((buttons & IN_JUMP) && (buttons & IN_SPEED) && (GetEntityFlags(client_index) & FL_ONGROUND))
+			if ((buttons & IN_JUMP) && !(buttons & IN_SPEED) && (buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
 			{
 				SuperJump(client_index);
 			}
 			// Dash
-			if ((buttons & IN_JUMP) && (buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
+			if ((buttons & IN_JUMP) && !(buttons & IN_SPEED) && !(buttons & IN_DUCK) && (GetEntityFlags(client_index) & FL_ONGROUND))
 			{
 				Dash(client_index);
 			}
@@ -489,6 +489,10 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 		{
 			buttons &= ~IN_DUCK;
 			return Plugin_Continue;
+		}
+		if (buttons & IN_SPEED)
+		{
+			buttons &= ~IN_SPEED;
 		}
 	}
 	
@@ -541,6 +545,11 @@ public void Hook_OnPostThinkPost(int entity_index)
 		SetViewModel(entity_index, GetConVarBool(cvar_viewModel)); //Hide viewmodel based on cvar
 		healthFactor = GetConVarInt(cvar_healthfactor);
 		chickenSprintSpeed = GetConVarFloat(cvar_sprintspeed);
+		int currentFlags = GetEntityFlags(entity_index);
+		if (currentFlags & FL_ONGROUND)
+		{
+			SetClientSpeed(entity_index);
+		}
 	}
 }
 

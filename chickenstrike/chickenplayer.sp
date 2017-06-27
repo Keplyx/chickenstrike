@@ -50,8 +50,8 @@ int healthFactor;
 float chickenSprintSpeed;
 
 //Chicken constants
-const float chickenRunSpeed = 0.36; //Match real chicken speed (kind of)  
-const float chickenWalkSpeed = 0.12;
+const float chickenRunSpeed = 102.0; //Match real chicken run speed (kind of)  
+const float chickenWalkSpeed = 6.5; //Match real chicken walk speed (kind of)  
 const float maxFallSpeed = -100.0;
 
 
@@ -64,8 +64,6 @@ void SetChicken(int client_index)
 	SetEntityModel(client_index, chickenModel);
 	
 	SetEntityHealth(client_index, healthFactor * GetTeamClientCount(CS_TEAM_T));
-	//Little chicken has little legs
-	SetClientSpeed(client_index, chickenRunSpeed); //Changed based on animation
 	//Hide the real player model (because animations won't play)
 	//SDKHook(client_index, SDKHook_SetTransmit, Hook_SetTransmit); //Crash server
 	SetEntityRenderMode(client_index, RENDER_NONE); //Make sure immunity alpha is set to 0 or it won't work
@@ -107,7 +105,6 @@ public void DisableChicken(int client_index)
 	//Reset player's properties, stop animations
 	if (IsValidClient(client_index))
 	{
-		SetClientSpeed(client_index, 1.0);
 		SetEntityRenderMode(client_index, RENDER_NORMAL);
 		ChickenDeath(client_index);
 	}
@@ -156,10 +153,28 @@ void ChickenDeath(int client_index) //Fake a chicken's death
 	feathersTimer[client_index] = CreateTimer(3.0, Timer_DestroyParticles, client_index);
 }
 
-public void SetClientSpeed(int client_index, float speed)
+public void SetClientSpeed(int client_index)
 {
-	if (IsValidClient(client_index))
-		SetEntPropFloat(client_index, Prop_Send, "m_flLaggedMovementValue", speed); //reduce player's speed (including falling speed)
+	float vel[3];
+	float factor;
+	GetEntPropVector(client_index, Prop_Data, "m_vecVelocity", vel);
+	float velNorm = SquareRoot(vel[0]*vel[0] + vel[1]*vel[1] + vel[2]*vel[2]);
+	if (isWalking[client_index] && velNorm > chickenWalkSpeed)
+		factor = chickenWalkSpeed;
+	else if (isSprinting[client_index] && velNorm > chickenSprintSpeed)
+		factor = chickenSprintSpeed;
+	else if (!isWalking[client_index] && !isSprinting[client_index] && velNorm > chickenRunSpeed)
+		factor = chickenRunSpeed;
+		
+	for (int i = 0; i < sizeof(vel); i++)
+	{
+		if (factor > 0.0)
+		{
+			vel[i] /= velNorm;
+			vel[i] *= factor;
+		}
+	}
+	TeleportEntity(client_index, NULL_VECTOR, NULL_VECTOR, vel);
 }
 
 public void SlowPlayerFall(int client_index)
@@ -205,7 +220,6 @@ public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset fal
 		int currentFlags = GetEntityFlags(client_index);
 		if (!(currentFlags & FL_ONGROUND))
 		{
-			SetClientSpeed(client_index, 1.0);
 			//If client started fly, change his animation (falling), or set it back if 1s passed
 			if (flyCounter[client_index] == 0)
 			{
@@ -237,7 +251,6 @@ public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset fal
 				wasIdle[client_index] = true;
 				wasWalking[client_index] = false;
 				wasSprinting[client_index] = false;
-				SetClientSpeed(client_index, chickenRunSpeed);
 				//PrintToChat(client_index, "Idle");
 			}
 			//if pressing the walk key, is not already walking, set him walking   
@@ -248,7 +261,6 @@ public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset fal
 				wasIdle[client_index] = false;
 				wasWalking[client_index] = true;
 				wasSprinting[client_index] = false;
-				SetClientSpeed(client_index, chickenWalkSpeed);
 				//PrintToChat(client_index, "Walking");
 			}
 			//if is not pressing walk, pressing sprint, not already sprinting, set him sprinting     
@@ -259,7 +271,6 @@ public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset fal
 				wasIdle[client_index] = false;
 				wasWalking[client_index] = false;
 				wasSprinting[client_index] = true;
-				SetClientSpeed(client_index, chickenSprintSpeed);
 				//PrintToChat(client_index, "Sprinting");
 			}
 			//if is not pressing walk, not pressing sprint, not already running, set him running     
@@ -270,7 +281,6 @@ public Action Timer_ChickenAnim(Handle timer, int client_index) //Must reset fal
 				wasIdle[client_index] = false;
 				wasWalking[client_index] = false;
 				wasSprinting[client_index] = false;
-				SetClientSpeed(client_index, chickenRunSpeed);
 				//PrintToChat(client_index, "Running");
 			}
 		}

@@ -49,3 +49,4 @@ stock int GetRandomPlayer()
 	}
 	return 0;
 }
+
