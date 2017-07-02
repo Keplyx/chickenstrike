@@ -31,7 +31,7 @@ char modelsList[20][128];
 float spawnPointsList[20][2][3];
 
 bool hasHostage[MAXPLAYERS + 1];
-
+int hostageRescued[MAXPLAYERS + 1];
 // Place eggs next to hostages, chicken will save eggs instead of hostage
 
 public void SpawnEggs()
@@ -125,16 +125,16 @@ void CreateEggBox(int hostage)
 	}
 }
 
-public void RescueHostage(int client_index, int hostage)
+public void DropHostage(int client_index, int hostage)
 {
 	int i = hostagesList.FindValue(hostage);
+	hostageRescued[client_index] = 0;
 	hasHostage[client_index] = false;
 	SetVariantString(""); AcceptEntityInput(eggsList[i][0], "SetParent");
 	float pos[3];
 	GetClientAbsOrigin(client_index, pos);
 	TeleportEntity(eggsList[i][0], pos, NULL_VECTOR, NULL_VECTOR);
 }
-
 
 public void GrabHostage(int client_index, int hostage)
 {

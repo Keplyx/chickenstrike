@@ -181,7 +181,7 @@ public void Event_HostageRescue(Event event, const char[] name, bool dontBroadca
 {
 	int client_index = GetClientOfUserId(GetEventInt(event, "userid"));
 	int hostage = GetEventInt(event, "hostage");
-	RescueHostage(client_index, hostage);
+	hostageRescued[client_index] = hostage;
 }
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
@@ -196,6 +196,11 @@ public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast
 		chickenOP = nextChickenOP;
 		BalanceTeams();
 		nextChickenOP = -1;
+	}
+	
+	for (int i = 0; i <= MAXPLAYERS; i++)
+	{
+		hostageRescued[i] = 0;
 	}
 }
 
@@ -549,6 +554,8 @@ public void Hook_OnPostThinkPost(int entity_index)
 		if (currentFlags & FL_ONGROUND)
 		{
 			SetClientSpeed(entity_index);
+			if (hostageRescued[entity_index] > 0)
+				DropHostage(entity_index, hostageRescued[entity_index])
 		}
 	}
 }
