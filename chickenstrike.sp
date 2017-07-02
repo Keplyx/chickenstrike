@@ -43,7 +43,7 @@
 
 
 /*  New in this version
-*
+*	First release!
 *
 */
 

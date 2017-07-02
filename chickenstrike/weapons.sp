@@ -55,7 +55,7 @@ public void CreateFakeWeapon(int client_index, int weapon_index)
 
 public void SetModel(int client_index, int weapon_index, char[] classname)
 {
-	if (StrEqual(classname, "weapon_smokegrenade", false) || StrEqual(classname, "weapon_decoy", false) || StrEqual(classname, "weapon_tagrenade", false) || StrEqual(classname, "weapon_molotov", false) || StrEqual(classname, "weapon_incgrenade", false) || StrEqual(classname, "weapon_hegrenade", false))
+	if (StrEqual(classname, "weapon_smokegrenade", false) || StrEqual(classname, "weapon_tagrenade", false) || StrEqual(classname, "weapon_molotov", false) || StrEqual(classname, "weapon_incgrenade", false) || StrEqual(classname, "weapon_hegrenade", false))
 	{
 		SetWeaponPos(client_index, 1);
 	}
