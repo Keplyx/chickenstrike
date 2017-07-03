@@ -47,4 +47,4 @@ Simply download **[chickenstrike.smx](https://github.com/Keplyx/chickenstrike/ra
 
 ## [:globe_with_meridians: Changlelog](https://github.com/Keplyx/chickenstrike/blob/master/Changlelog.md)
 
-### Creator: [Keplyx](http://steamcommunity.com/id/Keplyx/
+### Creator: [Keplyx](http://steamcommunity.com/id/Keplyx/)
