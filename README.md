@@ -38,3 +38,10 @@ Simply download **[chickenstrike.smx](https://github.com/Keplyx/chickenstrike/ra
     
 	  Admin only:
     "cs_setop <player>" (Set the <player> as the chicken OP. It will restart the round)
+
+
+## [:globe_with_meridians: See More](https://github.com/Keplyx/chickenstrike/wiki/Gallery)
+
+## [:globe_with_meridians: Changlelog](https://github.com/Keplyx/chickenstrike/blob/master/Changlelog.md)
+
+### Creator: Keplyx
