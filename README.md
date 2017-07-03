@@ -25,6 +25,7 @@ Simply download **[chickenstrike.smx](https://github.com/Keplyx/chickenstrike/ra
    * CT decoy will create an other chicken
    * CT must rescue hostages (egg pack)
    * CT egg, when hitting an enemy, will make him drop his weapon and invert his controls
+   * CT health is set based on Terrorist number
    * Terrosists must protect the hostages from the CT, or stay alive until the time ends
    * Chicken OP is selected randomly on each round start if more than 2 players are present
    * Chat triggers for basic commands. Use *!cs_credits* to display the credits and *!cs_help* to display the help
