@@ -49,7 +49,7 @@
 
 //Gamemode: T must stop the CT chicken from saving eggs
 
-#define VERSION "0.5"
+#define VERSION "1.0.0"
 #define PLUGIN_NAME "Chicken Strike",
 
 bool lateload;
@@ -100,7 +100,7 @@ public void OnPluginStart()
 	}
 	
 	if (lateload)
-	ServerCommand("mp_restartgame 1");
+		ServerCommand("mp_restartgame 1");
 	
 	PrintToServer("*************************************");
 	PrintToServer("* Chicken Strike successfuly loaded *");
@@ -114,6 +114,14 @@ public void OnMapStart()
 	PrecacheModel(eggBoxModel, true);
 }
 
+public void OnPluginEnd()
+{
+	ResetCvars();
+	if (IsValidClient(chickenOP))
+		DisableChicken(chickenOP);
+	ServerCommand("mp_restartgame 1");
+}
+
 public void OnConfigsExecuted()
 {
 	IntiCvars();
@@ -123,9 +131,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 {
 	int victim = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (IsClientCT(victim))
-	{
 		DisableChicken(victim);
-	}
 }
 
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)

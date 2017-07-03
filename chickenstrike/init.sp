@@ -67,6 +67,19 @@ public void IntiCvars()
 	 
 	SetConVarInt(FindConVar("mp_playercashawards"), 0);
 	SetConVarInt(FindConVar("mp_teamcashawards"), 0);
-	
-	
+}
+
+public void ResetCvars()
+{
+	ResetConVar(FindConVar("mp_teamname_1"));
+	ResetConVar(FindConVar("sv_disable_immunity_alpha"));
+	ResetConVar(FindConVar("mp_autoteambalance"));
+	ResetConVar(FindConVar("mp_autokick"));
+	ResetConVar(FindConVar("sv_holiday_mode"));
+	ResetConVar(FindConVar("healthshot_health"));
+	ResetConVar(FindConVar("ammo_item_limit_healthshot"));
+	ResetConVar(FindConVar("mp_death_drop_grenade"));
+	ResetConVar(FindConVar("mp_death_drop_defuser"));
+	ResetConVar(FindConVar("mp_playercashawards"));
+	ResetConVar(FindConVar("mp_teamcashawards"));
 }
