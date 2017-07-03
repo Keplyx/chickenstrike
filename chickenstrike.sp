@@ -101,10 +101,6 @@ public void OnPluginStart()
 	
 	if (lateload)
 		ServerCommand("mp_restartgame 1");
-	
-	PrintToServer("*************************************");
-	PrintToServer("* Chicken Strike successfuly loaded *");
-	PrintToServer("*************************************");
 }
 
 public void OnMapStart()
@@ -335,7 +331,7 @@ public Action Timer_WelcomeMessage(Handle timer, int client_index)
 	{
 		//Welcome message (white text in red box)
 		CPrintToChat(client_index, "{darkred}********************************");
-		CPrintToChat(client_index, "{darkred}* {default}Welcome to Chicken Strike");
+		CPrintToChat(client_index, "{darkred}* {default}Welcome to {lime}Chicken Strike");
 		CPrintToChat(client_index, "{darkred}*            {default}Made by {lime}Keplyx");
 		CPrintToChat(client_index, "{darkred}*{default} For more information on the plugin,");
 		CPrintToChat(client_index, "{darkred}*{default} use {lime}!cs_help{default} and {lime}!cs_credits{default} in chat");
@@ -423,11 +419,9 @@ public Action DisplayCredits(int client_index, int args)
 	CPrintToChat(client_index, "{green}----- CHICKEN STRIKE CREDITS -----");
 	CPrintToChat(client_index, "");
 	CPrintToChat(client_index, "{lime}>>> PROGRAMMING");
-	CPrintToChat(client_index, "Keplyx | http://steamcommunity.com/id/Keplyx/");
-	CPrintToChat(client_index, "{lime}>>> IDEA");
-	CPrintToChat(client_index, "Mori | http://steamcommunity.com/id/morianimation/");
+	CPrintToChat(client_index, "{yellow}Keplyx {default}| http://steamcommunity.com/id/Keplyx/");
 	CPrintToChat(client_index, "{lime}>>> Original ANIMATION");
-	CPrintToChat(client_index, "Mori Animations | https://www.youtube.com/watch?v=8kOOlC058ls");
+	CPrintToChat(client_index, "{yellow}Mori Animations {default}| https://www.youtube.com/watch?v=8kOOlC058ls");
 	CPrintToChat(client_index, "");
 	CPrintToChat(client_index, "Thanks for using this plugin! If you want to give some feedback, write on Keplyx' profile!");
 	CPrintToChat(client_index, "");
@@ -448,9 +442,9 @@ public Action DisplayHelp(int client_index, int args)
 	CPrintToChat(client_index, "{green}----- CHICKEN STRIKE HELP -----");
 	CPrintToChat(client_index, "Help is available online:");
 	CPrintToChat(client_index, "{lime}https://github.com/Keplyx/chickenstrike/wiki/Chicken-Strike-FAQ");
-	CPrintToChat(client_index, "(Open the console to copy-paste it in your browser)");
+	CPrintToChat(client_index, "{green}(Open the console to copy-paste it in your browser)");
 	CPrintToChat(client_index, "");
-	CPrintToChat(client_index, "If you still have questions, please contact Keplyx: http://steamcommunity.com/id/Keplyx/");
+	CPrintToChat(client_index, "If you still have questions, please contact Keplyx: {lime}http://steamcommunity.com/id/Keplyx/");
 	CPrintToChat(client_index, "{green}----- ---------- ---------- -----");
 	return Plugin_Handled;
 }
