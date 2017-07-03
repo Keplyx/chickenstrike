@@ -3,7 +3,7 @@ There's only one who can take down a squad of terrorists and save the hostages, 
 
 Inspired by the animation [**Chicken Strike [CS:GO SFM]**](https://www.youtube.com/watch?v=8kOOlC058ls) by [Mori Animations](https://www.youtube.com/channel/UCHA8dQhAxZ7o8KMy0pNhGtQ)
 
-This plugin tries to reproduce the action as seen on the [Chicken Strike animation](https://www.youtube.com/watch?v=8kOOlC058ls), with the permission of the original author, Mori (thanks dude!).
+This plugin tries to reproduce the action as seen on the [Chicken Strike animation](https://www.youtube.com/watch?v=8kOOlC058ls), with the permission of the original author, [Mori](http://steamcommunity.com/id/morianimation/) (thanks dude!).
 
 ### [See the presentation video!](https://www.youtube.com/watch?v=f6aps0025Hg)
 
@@ -45,4 +45,4 @@ Simply download **[chickenstrike.smx](https://github.com/Keplyx/chickenstrike/ra
 
 ## [:globe_with_meridians: Changlelog](https://github.com/Keplyx/chickenstrike/blob/master/Changlelog.md)
 
-### Creator: Keplyx
+### Creator: [Keplyx](http://steamcommunity.com/id/Keplyx/
