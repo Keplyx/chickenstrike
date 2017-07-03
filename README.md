@@ -5,7 +5,7 @@ Inspired by the animation [**Chicken Strike [CS:GO SFM]**](https://www.youtube.c
 
 This plugin tries to reproduce the action as seen on the [Chicken Strike animation](https://www.youtube.com/watch?v=8kOOlC058ls), with the permission of the original author, [Mori](http://steamcommunity.com/id/morianimation/) (thanks dude!).
 
-### [See the presentation video!](https://www.youtube.com/watch?v=f6aps0025Hg)
+### [:globe_with_meridians: Watch the presentation video!](https://www.youtube.com/watch?v=f6aps0025Hg)
 
 ### [:globe_with_meridians: See the wiki for more info](https://github.com/Keplyx/chickenstrike/wiki)
 
@@ -42,6 +42,8 @@ Simply download **[chickenstrike.smx](https://github.com/Keplyx/chickenstrike/ra
 
 
 ## [:globe_with_meridians: Preview the plugin](https://github.com/Keplyx/chickenstrike/wiki/Gallery)
+
+![20170703163624_1](https://user-images.githubusercontent.com/23726131/27797494-32d36614-600e-11e7-948c-d0db6c53733a.jpg)
 
 ## [:globe_with_meridians: Changlelog](https://github.com/Keplyx/chickenstrike/blob/master/Changlelog.md)
 
