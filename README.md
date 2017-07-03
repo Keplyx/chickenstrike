@@ -43,7 +43,7 @@ Simply download **[chickenstrike.smx](https://github.com/Keplyx/chickenstrike/ra
 
 ## [:globe_with_meridians: Preview the plugin](https://github.com/Keplyx/chickenstrike/wiki/Gallery)
 
-![20170703163624_1](https://user-images.githubusercontent.com/23726131/27797494-32d36614-600e-11e7-948c-d0db6c53733a.jpg)
+[![20170703163624_1](https://user-images.githubusercontent.com/23726131/27797494-32d36614-600e-11e7-948c-d0db6c53733a.jpg)](https://github.com/Keplyx/chickenstrike/wiki/Gallery)
 
 ## [:globe_with_meridians: Changlelog](https://github.com/Keplyx/chickenstrike/blob/master/Changlelog.md)
 
