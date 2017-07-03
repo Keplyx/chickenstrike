@@ -1,4 +1,4 @@
-<blockquote class="imgur-embed-pub" lang="en" data-id="4dKXonG"><a href="//imgur.com/4dKXonG"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+![logomori](https://user-images.githubusercontent.com/23726131/27793227-762bbad0-5ffd-11e7-8231-1a7b4fd2e00f.jpg)
 There's only one who can take down a squad of terrorists and save the hostages, call him in. All cluck, all chicken.
 
 Inspired by the animation [**Chicken Strike [CS:GO SFM]**](https://www.youtube.com/watch?v=8kOOlC058ls) by [Mori Animations](https://www.youtube.com/channel/UCHA8dQhAxZ7o8KMy0pNhGtQ)
