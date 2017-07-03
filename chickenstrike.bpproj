@@ -1,0 +1,9 @@
+[Project]
+0038dbe7-3816-4ff7-88fe-539e650c7783=/home/keplyx/Documents/Sourcemod/chickenstrike/chickenstrike.sp
+aa143f9e-83b4-4b25-8182-c212d2f068f1=/home/keplyx/Documents/Sourcemod/chickenstrike/chickenstrike/chickenplayer.sp
+33a919a3-a08e-4c17-8d88-d1003a6eb675=/home/keplyx/Documents/Sourcemod/chickenstrike/chickenstrike/customweapons.sp
+e94669f0-f40b-4213-bf14-42965c22892b=/home/keplyx/Documents/Sourcemod/chickenstrike/chickenstrike/hostages.sp
+a673373e-a889-4712-8f8f-aa14bfce339b=/home/keplyx/Documents/Sourcemod/chickenstrike/chickenstrike/init.sp
+e88fd371-b848-4513-9389-f5d7064d4bdc=/home/keplyx/Documents/Sourcemod/chickenstrike/chickenstrike/menus.sp
+cde2c48f-42ff-41d4-89dc-3bffd7d99822=/home/keplyx/Documents/Sourcemod/chickenstrike/chickenstrike/utils.sp
+00facf02-acb4-4a00-9195-e6213ec7bc10=/home/keplyx/Documents/Sourcemod/chickenstrike/chickenstrike/weapons.sp
