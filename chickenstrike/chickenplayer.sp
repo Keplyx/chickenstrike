@@ -204,12 +204,17 @@ public void SuperJump(int client_index)
 }
 
 public void Dash(int client_index)
-{
-	float vel[3];
-	float ang[3];
-	GetClientAbsAngles(client_index, ang);
+{	float vel[3], ang[3];
+	GetClientEyeAngles(client_index, ang);
+	if (ang[0] > -10.0)
+		ang[0] = -10.0;
+	if (ang[0] < -30.0)
+		ang[0] = -30.0;
+	PrintToServer("%f", ang[0]);
 	GetAngleVectors(ang, vel, NULL_VECTOR, NULL_VECTOR);
 	ScaleVector(vel, 700.0);
+	if (vel[2] > 100.0)
+		vel[2] = 100.0;
 	TeleportEntity(client_index, NULL_VECTOR, NULL_VECTOR, vel);
 }
 

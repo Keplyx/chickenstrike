@@ -27,6 +27,7 @@
 #pragma newdecls required;
 
 #include "chickenstrike/chickenplayer.sp"
+#include "chickenstrike/chickenmanager.sp"
 #include "chickenstrike/customweapons.sp"
 #include "chickenstrike/weapons.sp"
 #include "chickenstrike/menus.sp"
@@ -43,13 +44,14 @@
 
 
 /*  New in this version
-*	First release!
+*	Added chickens in the map
+*	Improved dash
 *
 */
 
 //Gamemode: T must stop the CT chicken from saving eggs
 
-#define VERSION "1.0.0"
+#define VERSION "1.0.1"
 #define PLUGIN_NAME "Chicken Strike",
 
 bool lateload;
@@ -189,7 +191,7 @@ public void Event_HostageRescue(Event event, const char[] name, bool dontBroadca
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	SpawnEggs();
-	
+	SpawnChickens(cvar_skin.IntValue, cvar_chicken_number.IntValue, cvar_spawnorigin.BoolValue);
 	// Prevent the game from entering a restart game loop if only 2 players
 	if ((GetTeamClientCount(CS_TEAM_T) > 1 || GetTeamClientCount(CS_TEAM_CT) > 1) && nextChickenOP <= 0)
 		ChooseOP();

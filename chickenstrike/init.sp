@@ -23,6 +23,10 @@ ConVar cvar_sprintspeed = null;
 ConVar cvar_customdecoy = null;
 ConVar cvar_customflash = null;
 
+ConVar cvar_chicken_number = null;
+ConVar cvar_spawnorigin = null;
+ConVar cvar_skin = null;
+
 public void CreateConVars(char[] version)
 {
 	CreateConVar("chickenstrike_version", version, "Chicken Strike", FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_NOTIFY | FCVAR_DONTRECORD);
@@ -32,6 +36,10 @@ public void CreateConVars(char[] version)
 	cvar_sprintspeed = CreateConVar("cs_sprintspeed", "220", "Set chickenOP's sprint speed. 250 = human speed, 102 = chicken run speed, 6.5 = chicken walk speed", FCVAR_NOTIFY, true, 0.01, true, 250.0);
 	cvar_customdecoy = CreateConVar("cs_customdecoy", "1", "Set whether to enable custom decoys for the Chicken OP. 0 = disabled, 1 = enabled", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	cvar_customflash = CreateConVar("cs_customflash", "1", "Set whether to enable custom flashes for the Chicken OP. 0 = disabled, 1 = enabled", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	
+	cvar_chicken_number = CreateConVar("cs_chicken_number", "100", "MIGHT CRASH SERVER IF TOO HIGH | Number of chickens to create on round start. min = 0, max = 1000", FCVAR_NOTIFY, true, 0.0, true, 1000.0);
+	cvar_spawnorigin = CreateConVar("cs_spawnorigin", "1", "Set whether to spawn chickens around the world origin. Set this to 0 only if the map is not built around the world origin. 1 = around pos(0,0,0), 0 = around spawns", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	cvar_skin = CreateConVar("cs_skin", "0", "Set the chicken's skin. 0 = white, 1 = brown, 2 = both", FCVAR_NOTIFY, true, 0.0, true, 2.0);
 	
 	AutoExecConfig(true, "chickenstrike");
 }
